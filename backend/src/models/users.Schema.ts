@@ -20,10 +20,10 @@ export class users{
     @Prop ({required: true , enum: ['student', 'instructor','admin']})
     role: string;
 
-    @Prop ({type: MongooseSchema.Types.ObjectId, ref: 'courses'})
+    @Prop ({type: MongooseScheme.Types.ObjectId, ref: 'courses'})
     coursesTaught?: courses[];
 
-    @Prop ({type: MongooseSchema.Types.ObjectId, ref: 'courses'})
+    @Prop ({type: MongooseScheme.Types.ObjectId, ref: 'courses'})
     coursesEnrolled?: courses[];
 
     @Prop()
