@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { CoursesService } from './courses.service';
+import { CourseDto } from 'src/dto/courses.dto';
 
 @Controller('courses')
 export class CoursesController 
@@ -7,38 +8,38 @@ export class CoursesController
     constructor(private readonly service: CoursesService){};
 
     @Post()
-    CreateCourse()
+    CreateCourse(@Body() body: CourseDto)
     {
-        return "Course Added";
+        return this.service.CreateCourse(body);
     }
 
     @Get()
     AllCourses()
     {
-        return "All Courses";
+        return this.service.AllCourses();
     }
 
     @Get('/:id')
     OneCourse(@Param('id') id:string)
     {
-        return id;
+        return this.service.OneCourse(id);
     }
 
     @Put('/:id')
-    UpdateCourse(@Param('id') id:string)
+    UpdateCourse(@Param('id') id:string, @Body() body: CourseDto)
     {
-        return id;
+        return this.service.UpdateCourse(id, body);
     }
 
     @Delete('/:id')
     DeleteCourse(@Param('id') id:string)
     {
-        return id;
+        return this.service.DeleteCourse(id);
     }
 
     @Post('/search')
     Search(@Query('key') key)
     {
-        return key;
+        return this.service.Search(key);
     }
 }
