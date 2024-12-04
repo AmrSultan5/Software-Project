@@ -1,6 +1,6 @@
 import MongooseScheme from 'mongoose';
 import {Prop , Schema , SchemaFactory} from '@nestjs/mongoose';
-import { courses } from './courses.Schema';
+import { Courses } from './courses.Schema';
 
 
 @Schema({timestamps: true})
@@ -21,10 +21,10 @@ export class users{
     role: string;
 
     @Prop ({type: MongooseScheme.Types.ObjectId, ref: 'courses'})
-    coursesTaught?: courses[];
+    coursesTaught?: Courses[];
 
     @Prop ({type: MongooseScheme.Types.ObjectId, ref: 'courses'})
-    coursesEnrolled?: courses[];
+    coursesEnrolled?: Courses[];
 
     @Prop()
     profile_picture_url?: string;
