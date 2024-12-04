@@ -24,7 +24,7 @@ import {
     @MinLength(6, { message: 'Password must be at least 6 characters long' })
     readonly password: string;
   
-    @IsOptional()
+    @IsNotEmpty()
     @IsEnum(['student', 'instructor', 'admin'], {
       message: 'Role must be one of the following values: student, instructor, admin',
     })
