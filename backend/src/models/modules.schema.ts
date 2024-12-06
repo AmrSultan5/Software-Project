@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ timestamps: true })
-export class Module {
+export class Modules {
   @Prop({ required: true, unique: true })
   module_id: string;  // Unique identifier for the module
 
@@ -21,4 +21,4 @@ export class Module {
   created_at: Date;  // Timestamp of module creation
 }
 
-export const ModuleSchema = SchemaFactory.createForClass(Module);
+export const ModuleSchema = SchemaFactory.createForClass(Modules);
