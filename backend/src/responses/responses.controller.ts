@@ -26,8 +26,8 @@ export class ResponsesController {
 
     @Put(':user_Id/:quiz_id')
 async Update(
-  @Param('user_Id') user_Id: string,
-  @Param('quiz_id') quiz_id: string,
+  @Param('user_Id') user_Id: Types.ObjectId,
+  @Param('quiz_id') quiz_id: Types.ObjectId,
   @Body() body: ResponseDto,
 ) {
   return this.service.Update(user_Id, quiz_id, body);
@@ -35,7 +35,7 @@ async Update(
 
 
     @Delete('/:user_Id/:quiz_Id')
-    Delete(@Param('user_Id') userId: string, @Param('quiz_Id') quizId: string) {
+    Delete(@Param('user_Id') userId: Types.ObjectId, @Param('quiz_Id') quizId: Types.ObjectId) {
     return this.service.Delete(userId, quizId);
     }
 
