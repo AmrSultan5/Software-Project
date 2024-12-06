@@ -94,7 +94,7 @@ import {
       try {
         const decoded = this.jwtService.verify(jwt);  
         return decoded;  
-      } catch (err) {
+      } catch {
         throw new UnauthorizedException('Invalid or expired token');
       }
     }
