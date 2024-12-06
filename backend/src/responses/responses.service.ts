@@ -22,7 +22,7 @@ export class ResponsesService {
         return this.responseModel.findOne({ user_Id, quiz_id });
       }
 
-      Update(user_Id: string, quiz_id: string, body: ResponseDto) {
+      Update(user_Id: Types.ObjectId, quiz_id: Types.ObjectId, body: ResponseDto) {
         return this.responseModel.findOneAndUpdate(
           { user_Id, quiz_id },
           { $set: body },
@@ -30,7 +30,7 @@ export class ResponsesService {
         );
       }
 
-      Delete(user_Id: string, quiz_id: string): Promise<DeleteResult> {
+      Delete(user_Id: Types.ObjectId, quiz_id: Types.ObjectId): Promise<DeleteResult> {
         return this.responseModel.deleteOne({user_Id, quiz_id}).exec();
     }
 
