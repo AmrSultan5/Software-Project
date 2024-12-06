@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ResponsesService } from './responses.service';
-import { get } from 'mongoose';
 import { ResponseDto } from 'src/dto/responses.dto';
 
 

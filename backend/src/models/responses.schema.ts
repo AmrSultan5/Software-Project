@@ -7,7 +7,7 @@ export type ResponseDocument = responses & Document;
 @Schema({ timestamps: true }) 
 export class responses {
     @Prop({ required: true , unique: true })
-    responese_id: string;
+    responses_id: string;
 
     @Prop({ type: Types.ObjectId, ref: 'users', required: true})
     user_Id: Types.ObjectId;
