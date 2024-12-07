@@ -1,15 +1,17 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { UserDto } from 'src/dto/users.dto';
 import { UsersService } from './users.service';
+import { DeleteResult } from 'mongodb';
+
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
-  @Post()
-  Add(@Body() body: UserDto) {
-    return this.service.Add(body);
-  }
+  // @Post()
+  // Add(@Body() body: UserDto) {
+  //   return this.service.Add(body);
+  // }
 
   @Get()
   FindAll() {
@@ -27,10 +29,9 @@ export class UsersController {
   }
 
   @Delete('/:id')
-  Delete(@Param('id') id: string) {
-    return this.service.Delete(id);
-  }
-
+Delete(@Param('id') id: string): Promise<DeleteResult> {
+  return this.service.Delete(id);
+}
   @Post('/search')
   Search(@Query('key') key) {
     return this.service.Search(key);

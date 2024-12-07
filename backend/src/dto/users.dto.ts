@@ -1,36 +1,37 @@
 import { IsString, IsEmail, IsNotEmpty, IsOptional, IsEnum, IsArray } from 'class-validator';
 import { Types } from 'mongoose';
 
-export class CreateUserDto {
+export class UserDto {
   @IsString()
-  @IsNotEmpty() // Ensures the field is not empty
+  @IsNotEmpty()
   readonly user_id: string;
 
   @IsString()
-  @IsNotEmpty() // Ensures the field is not empty
+  @IsNotEmpty()
   readonly name: string;
 
   @IsEmail()
-  @IsNotEmpty() // Ensures the field is not empty and a valid email
+  @IsNotEmpty()
   readonly email: string;
 
   @IsString()
-  @IsNotEmpty() // Ensures the field is not empty
+  @IsNotEmpty()
   readonly password: string;
+  
 
   @IsEnum(['student', 'instructor', 'admin'])
-  @IsNotEmpty() // Ensures the field is not empty and matches the enum
+  @IsNotEmpty()
   readonly role: string;
 
   @IsArray()
-  @IsOptional() // Optional field for courses taught
+  @IsOptional()
   readonly coursesTaught?: Types.ObjectId[];
 
   @IsArray()
-  @IsOptional() // Optional field for courses enrolled
+  @IsOptional()
   readonly coursesEnrolled?: Types.ObjectId[];
 
   @IsString()
-  @IsOptional() // Optional field for profile picture URL
+  @IsOptional()
   readonly profile_picture_url?: string;
 }

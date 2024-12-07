@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 import { UserDocument, users } from 'src/models/users.Schema';
+import { UserDto } from 'src/dto/users.dto'; // Correct import path
 import { faker } from '@faker-js/faker';
-
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(users.name) private userModel: Model<UserDocument>) {}
-  Add(body: UserDto) {
-    return this.userModel.create(body);
-  }
+
+  // Add(body: UserDto) {
+
+  //   return this.userModel.create(body); 
+  // }
 
   FindAll() {
     return this.userModel.find();
   }
-
-  FindOne(id: string) {
-    return this.userModel.findOne({ _id: id });
+ 
+  FindOne(_id: string) {
+    return this.userModel.findById( _id);
   }
 
   Update(id: string, body: UserDto) {
@@ -28,8 +30,8 @@ export class UsersService {
     );
   }
 
-  Delete(id: string) {
-    return this.userModel.remove({ _id: id });
+  Delete(_id: string): Promise<DeleteResult> {
+    return this.userModel.findByIdAndDelete( _id); // Use .exec() for proper Promise handling
   }
 
   Search(key: string) {
@@ -40,26 +42,26 @@ export class UsersService {
             { email: { $regex: key, $options: 'i' } },
           ],
         }
-      : {};
-    return this.userModel.find(keyword);
+      : {}; 
+    return this.userModel.findOne({key});
   }
 
   Faker() {
     for (let index = 0; index < 30; index++) {
       const fakeUser = {
-        user_id: faker.datatype.uuid(), // Generates a unique user ID
-        name: faker.name.fullName(), // Generates a random full name
+        user_id: faker.string.uuid(), // Replace with faker.string.uuid()
+        name: faker.person.fullName(), // Generates a random full name
         email: faker.internet.email(), // Generates a unique email
-        password: faker.internet.password(10), // Generates a random 10-character password
+        password: faker.internet.password({ length: 10 }),// Generates a random 10-character password
         role: faker.helpers.arrayElement(['student', 'instructor', 'admin']), // Randomly selects a role
-        coursesTaught: [], // Empty array for simplicity; update logic if necessary
-        coursesEnrolled: [], // Empty array for simplicity; update logic if necessary
+        coursesTaught: [],
+        coursesEnrolled: [],
         profile_picture_url: faker.image.avatar(), // Generates a random profile picture URL
-        createdAt: new Date(), // Sets the current date as creation date
+        createdAt: new Date(),
       };
   
-      this.userModel.create(fakeUser); // Creates the user in the database
+      this.userModel.create(fakeUser);
     }
     return 'success';
   }
-}
+}  
