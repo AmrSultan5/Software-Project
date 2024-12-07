@@ -40,7 +40,7 @@ export class ResponsesService {
 
         const query = {
             $or: [
-              { response_id: { $regex: key, $options: 'i' } },
+              { responses_id: { $regex: key, $options: 'i' } },
               { user_Id: { $regex: key, $options: 'i' } },
               { quiz_Id: { $regex: key, $options: 'i' } },
               { answers: { $regex: key, $options: 'i' } },

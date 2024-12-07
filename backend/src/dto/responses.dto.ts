@@ -11,7 +11,7 @@ import { Types } from 'mongoose';
   export class ResponseDto {
     @IsNotEmpty()
     @IsString()
-    responese_id: string;
+    responses_id: string;
   
     @IsNotEmpty()
     @IsString()
@@ -30,9 +30,8 @@ import { Types } from 'mongoose';
     score : number;
 
    
-    @IsNotEmpty()
+    @IsOptional()
     @IsDateString()
-    submitted_at?: Date;
-    static schema: any;
+    created_at: Date;
   
   }  
