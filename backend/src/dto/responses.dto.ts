@@ -5,7 +5,6 @@ import {
     IsNumber,
     IsOptional,
   } from 'class-validator';
-import { Types } from 'mongoose';
   
   export class ResponseDto {
     @IsNotEmpty()
@@ -14,11 +13,11 @@ import { Types } from 'mongoose';
   
     @IsNotEmpty()
     @IsString()
-    user_Id: Types.ObjectId;
+    user_Id: string;
   
     @IsNotEmpty()
     @IsString()
-    quiz_Id: Types.ObjectId;
+    quiz_Id: string;
   
     @IsNotEmpty()
     @IsString()
@@ -31,7 +30,7 @@ import { Types } from 'mongoose';
   
     @IsOptional()
     @IsDateString()
-    submitted_at: Date;
+    submitted_at?: Date;
     static schema: any;
   
   }  
