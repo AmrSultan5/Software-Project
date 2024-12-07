@@ -18,9 +18,9 @@ async function bootstrap() {
         errors.forEach((err) => {
           errMsg[err.property] = [...Object.values(err.constraints)];
         });
-        return new ValidationException(errMsg);
+        return new ValidationException(errMsg); 
       },
-    }),
+    }), 
   );
 
 
