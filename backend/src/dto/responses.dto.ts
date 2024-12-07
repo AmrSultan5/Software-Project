@@ -29,10 +29,10 @@ import { Types } from 'mongoose';
     @IsNumber()
     score : number;
 
-  
+   
     @IsNotEmpty()
     @IsDateString()
-    submitted_at: Date;
+    submitted_at?: Date;
     static schema: any;
   
   }  

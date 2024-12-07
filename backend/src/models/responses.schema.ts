@@ -10,12 +10,12 @@ export class responses {
     responese_id: string;
 
     @Prop({ type: Types.ObjectId, ref: 'users', required: true})
-    user_Id: Types.ObjectId;
+    user_Id: string;
 
     @Prop({ type: Types.ObjectId, ref: 'quizzes', required: true})
-    quiz_Id: Types.ObjectId;
+    quiz_Id:string;
 
-    @Prop()
+    @Prop() 
     answers : object[];
 
     @Prop()

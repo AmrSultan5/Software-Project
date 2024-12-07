@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { response } from 'express';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { ResponseDto } from 'src/dto/responses.dto';
 import { responses } from 'src/models/responses.schema';
 import { ResponseDocument } from 'src/models/responses.schema';
@@ -9,7 +9,7 @@ import { DeleteResult } from 'mongodb';
 @Injectable()
 export class ResponsesService {
 
-    constructor(@InjectModel(responses.name) private responseModel: Model<ResponseDocument>){}
+    constructor(@InjectModel(responses.name) private responseModel: mongoose.Model<ResponseDocument>){}
 
     Add(body: ResponseDto) {
         return this.responseModel.create(body);
@@ -19,20 +19,21 @@ export class ResponsesService {
         return this.responseModel.find();
     } 
 
-    FindOne(user_Id: Types.ObjectId, quiz_id: Types.ObjectId) {
-        return this.responseModel.findOne({ user_Id, quiz_id });
+    async FindOne(user_Id: string, quiz_Id: string) {
+        const data= await this.responseModel.findOne({ user_Id, quiz_Id });
+        return {message:"your data is retrieved successfully", data: data}
       }
 
-      Update(user_Id: string, quiz_id: string, body: ResponseDto) {
+      Update(user_Id: string, quiz_Id: string, body: ResponseDto) {
         return this.responseModel.findOneAndUpdate(
-          { user_Id, quiz_id },
+          { user_Id, quiz_Id },
           { $set: body },
           { new: true }
         );
-      }
+      } 
 
-      Delete(user_Id: string, quiz_id: string): Promise<DeleteResult> {
-        return this.responseModel.deleteOne({user_Id, quiz_id}).exec();
+      Delete(user_Id: string, quiz_Id: string): Promise<DeleteResult> {
+        return this.responseModel.deleteOne({user_Id, quiz_Id}).exec();
     }
 
     Search(key: string): Promise<ResponseDocument[]> {

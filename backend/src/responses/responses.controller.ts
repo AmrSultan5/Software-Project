@@ -21,17 +21,17 @@ export class ResponsesController {
 
     @Get(':user_Id/:quiz_id')
     async findOne(@Param('user_Id') user_Id: string, @Param('quiz_id') quiz_id: string) {
-      return this.responsesService.FindOne(user_Id, quiz_id);
+      return this.service.FindOne(user_Id, quiz_id);
     }
     
 
-    @Put(':user_Id/:quiz_id')
+    @Put(':user_Id/:quiz_Id')
 async Update(
   @Param('user_Id') user_Id: string,
-  @Param('quiz_id') quiz_id: string,
-  @Body() body: any,
+  @Param('quiz_id') quiz_Id: string,
+  @Body() body: ResponseDto,
 ) {
-  return this.service.Update(user_Id, quiz_id, body);
+  return this.service.Update(user_Id, quiz_Id, body);
 }
 
 
