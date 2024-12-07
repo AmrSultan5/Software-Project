@@ -4,6 +4,7 @@ import {
     IsDateString,
     IsNumber,
     IsOptional,
+    IsArray,
   } from 'class-validator';
   
   export class ResponseDto {
@@ -20,7 +21,7 @@ import {
     quiz_Id: string;
   
     @IsNotEmpty()
-    @IsString()
+    @IsArray()
     answers : object[];
 
     @IsNotEmpty()
