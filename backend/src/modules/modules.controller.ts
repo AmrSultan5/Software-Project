@@ -40,7 +40,7 @@ export class ModuleController {
     await this.moduleService.remove(id);
   }
 
-  // Get modules for a specific user by user_id
+  // Get modules for a specific user by user_id 
   @Get('user/:userId')
   async findByUser(@Param('userId') userId: string): Promise<Module[]> {
     return this.moduleService.findByUserId(userId);
@@ -52,4 +52,13 @@ export class ModuleController {
     const userId = req.user.user_id;  
     return this.moduleService.findMyModules(userId);
   }
+  @Get('user')
+  async findModulesByUserQuery(@Request() req): Promise<Module[]> {
+    const userId = req.query.userId; 
+    if (!userId) {
+      throw new Error("userId query parameter is required.");
+    }
+    return this.moduleService.findByUserId(userId);
+  }
 }
+
