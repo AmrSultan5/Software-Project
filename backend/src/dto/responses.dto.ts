@@ -15,11 +15,11 @@ import { Types } from 'mongoose';
   
     @IsNotEmpty()
     @IsString()
-    user_Id: Types.ObjectId;
+    user_Id: string;
   
     @IsNotEmpty()
     @IsString()
-    quiz_Id: Types.ObjectId;
+    quiz_Id: string;
   
     @IsNotEmpty()
     @IsString()
