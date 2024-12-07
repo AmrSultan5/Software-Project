@@ -11,6 +11,6 @@ import { AuthModule } from '../auth/auth.module';
     MongooseModule.forFeature([{ name: Courses.name, schema: CourseSchema}])
   ], 
   controllers: [CoursesController],
-  providers: [CoursesService]
+  providers: [CoursesService],
 })
 export class CoursesModule {}
