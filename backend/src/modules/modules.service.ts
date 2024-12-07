@@ -6,7 +6,7 @@ import {
   } from '@nestjs/common';
   import { InjectModel } from '@nestjs/mongoose';
   import { Model } from 'mongoose';
-  import { Module } from 'src/models/modules.schema';
+  import { Modules } from 'src/models/modules.schema';
   import { ModuleDto } from 'src/dto/modules.dto';  
   import { UpdateModuleDto } from 'src/dto/UpdateModule.dto';  
   import { JwtService } from '@nestjs/jwt'; 
@@ -14,12 +14,12 @@ import {
   @Injectable()
   export class ModuleService {
     constructor(
-      @InjectModel(Module.name) private moduleModel: Model<Module>,
+      @InjectModel(Modules.name) private moduleModel: Model<Modules>,
       private jwtService: JwtService,
     ) {}
   
     // Create a new module
-    async create(createModuleDto: ModuleDto): Promise<Module> {
+    async create(createModuleDto: ModuleDto): Promise<Modules> {
       const { module_id, course_id, title, content, resources, user_id } = createModuleDto;
   
       // Check if a module with the same module_id already exists
@@ -42,13 +42,13 @@ import {
     }
   
     // Get all modules
-    async findAll(): Promise<Module[]> {
+    async findAll(): Promise<Modules[]> {
       return this.moduleModel.find().exec();  
     }
   
     // Get a single module by ID
-    async findOne(id: string): Promise<Module> {
-      const module = await this.moduleModel.findById(id).exec();
+    async findOne(module_id: string): Promise<Modules> {
+      const module = await this.moduleModel.findOne({module_id}).exec();
       if (!module) {
         throw new NotFoundException('Module not found');
       }
@@ -56,33 +56,33 @@ import {
     }
   
     // Get modules by user_id
-    async findByUserId(userId: string): Promise<Module[]> {
+    async findByUserId(userId: string): Promise<Modules[]> {
       return this.moduleModel.find({ user_id: userId }).exec();
     }
   
     // Get modules for the current authenticated user
-    async findMyModules(userId: string): Promise<Module[]> {
+    async findMyModules(userId: string): Promise<Modules[]> {
       return this.moduleModel.find({ user_id: userId }).exec();
     }
   
     // Update an existing module by ID
-    async update(id: string, updateModuleDto: UpdateModuleDto): Promise<Module> {
-      const existingModule = await this.moduleModel.findById(id).exec();
+    async update(module_id: string, updateModuleDto: UpdateModuleDto): Promise<Modules> {
+      const existingModule = await this.moduleModel.findOne({module_id}).exec();
       if (!existingModule) {
         throw new NotFoundException('Module not found');
       }
   
 
       const updatedModule = await this.moduleModel
-        .findByIdAndUpdate(id, updateModuleDto, { new: true })
+        .findOneAndUpdate({module_id}, updateModuleDto, { new: true })
         .exec();
   
       return updatedModule; 
     }
   
     // Delete a module by ID
-    async remove(id: string): Promise<Module> {
-      const module = await this.moduleModel.findByIdAndDelete(id).exec();
+    async remove(module_id: string): Promise<Modules> {
+      const module = await this.moduleModel.findOneAndDelete({module_id}).exec();
       if (!module) {
         throw new NotFoundException('Module not found');
       }
