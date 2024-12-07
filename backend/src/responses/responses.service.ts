@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { response } from 'express';
-import mongoose, { Model, Types } from 'mongoose';
 import { ResponseDto } from 'src/dto/responses.dto';
 import { responses } from 'src/models/responses.schema';
 import { ResponseDocument } from 'src/models/responses.schema';
 import { DeleteResult } from 'mongodb';
+import { Model } from 'mongoose';
 @Injectable()
 export class ResponsesService {
 
-    constructor(@InjectModel(responses.name) private responseModel: mongoose.Model<ResponseDocument>){}
+    constructor(@InjectModel(responses.name) private responseModel: Model<ResponseDocument>){}
 
     Add(body: ResponseDto) {
         return this.responseModel.create(body);

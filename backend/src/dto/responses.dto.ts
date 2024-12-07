@@ -1,12 +1,11 @@
 import {
     IsNotEmpty,
     IsString,
-    IsEnum,
-    IsOptional,
     IsDateString,
     IsNumber,
+    IsOptional,
+    IsArray,
   } from 'class-validator';
-import { Types } from 'mongoose';
   
   export class ResponseDto {
     @IsNotEmpty()
@@ -22,14 +21,14 @@ import { Types } from 'mongoose';
     quiz_Id: string;
   
     @IsNotEmpty()
-    @IsString()
+    @IsArray()
     answers : object[];
 
     @IsNotEmpty()
     @IsNumber()
     score : number;
 
-   
+  
     @IsOptional()
     @IsDateString()
     created_at: Date;
