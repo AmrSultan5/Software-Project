@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ResponsesModule } from './responses/responses.module';
 import { ModuleModule } from './modules/modules.module';
 import { UsersModule } from './users/users.module';
+import { ProgressModule } from './progress/progress.module'
 
 @Module({
   imports: [  
@@ -17,7 +18,8 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     ResponsesModule,
     ModuleModule,
-    UsersModule],
+    UsersModule,
+    ProgressModule],
   controllers: [AppController],
   providers: [AppService],
 })
