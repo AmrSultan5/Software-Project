@@ -10,6 +10,7 @@ import { ModuleModule } from './modules/modules.module';
 import { UsersModule } from './users/users.module';
 import { ProgressModule } from './progress/progress.module'
 import { QuizzesModule } from './quizzes/quizzes.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [  
@@ -21,7 +22,8 @@ import { QuizzesModule } from './quizzes/quizzes.module';
     ModuleModule,
     UsersModule,
     ProgressModule,
-    QuizzesModule],
+    QuizzesModule,
+    NotesModule],
   controllers: [AppController],
   providers: [AppService],
 })
