@@ -1,67 +1,66 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { UserDocument, users } from 'src/models/users.Schema';
-import { UserDto } from 'src/dto/users.dto'; // Correct import path
+import { UserDto } from 'src/dto/users.dto';
+import { DeleteResult } from 'mongodb';
 import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(users.name) private userModel: Model<UserDocument>) {}
 
-  // Add(body: UserDto) {
-
-  //   return this.userModel.create(body); 
-  // }
+  Add(body: UserDto): Promise<UserDocument> {
+    return this.userModel.create(body); // Saves the new user to the database
+  }
 
   FindAll() {
-    return this.userModel.find();
-  }
- 
-  FindOne(_id: string) {
-    return this.userModel.findById( _id);
+    return this.userModel.find().exec();
   }
 
-  Update(id: string, body: UserDto) {
-    return this.userModel.findByIdAndUpdate(
-      { _id: id },
-      { $set: body },
-      { new: true },
-    );
+  FindOne(user_id: string) {
+    return this.userModel.findOne({ user_id }).exec();
   }
 
-  Delete(_id: string): Promise<DeleteResult> {
-    return this.userModel.findByIdAndDelete( _id); // Use .exec() for proper Promise handling
+  Update(user_id: string, body: UserDto) {
+    return this.userModel
+      .findOneAndUpdate({ user_id }, { $set: body }, { new: true })
+      .exec();
+  }
+
+  Delete(user_id: string): Promise<DeleteResult> {
+    return this.userModel.deleteOne({ user_id }).exec();
   }
 
   Search(key: string) {
     const keyword = key
       ? {
           $or: [
-            { fullname: { $regex: key, $options: 'i' } },
+            { name: { $regex: key, $options: 'i' } },
             { email: { $regex: key, $options: 'i' } },
+            { user_id: { $regex: key, $options: 'i' } },
           ],
         }
-      : {}; 
-    return this.userModel.findOne({key});
+      : {};
+    return this.userModel.find(keyword).exec();
   }
 
   Faker() {
     for (let index = 0; index < 30; index++) {
       const fakeUser = {
-        user_id: faker.string.uuid(), // Replace with faker.string.uuid()
-        name: faker.person.fullName(), // Generates a random full name
-        email: faker.internet.email(), // Generates a unique email
-        password: faker.internet.password({ length: 10 }),// Generates a random 10-character password
-        role: faker.helpers.arrayElement(['student', 'instructor', 'admin']), // Randomly selects a role
+        user_id: faker.string.uuid(),
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password({ length: 10 }),
+        role: faker.helpers.arrayElement(['student', 'instructor', 'admin']),
         coursesTaught: [],
         coursesEnrolled: [],
-        profile_picture_url: faker.image.avatar(), // Generates a random profile picture URL
+        profile_picture_url: faker.image.avatar(),
         createdAt: new Date(),
       };
-  
+
       this.userModel.create(fakeUser);
     }
     return 'success';
   }
-}  
+}

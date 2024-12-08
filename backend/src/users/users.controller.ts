@@ -2,42 +2,43 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/
 import { UserDto } from 'src/dto/users.dto';
 import { UsersService } from './users.service';
 import { DeleteResult } from 'mongodb';
-
+import { UserDocument } from 'src/models/users.Schema';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
-  // @Post()
-  // Add(@Body() body: UserDto) {
-  //   return this.service.Add(body);
-  // }
+  @Post()
+  Add(@Body() body: UserDto): Promise<UserDocument> {
+    return this.service.Add(body); 
+  }
 
   @Get()
   FindAll() {
     return this.service.FindAll();
   }
 
-  @Get('/:id')
-  FindOne(@Param('id') id: string) {
-    return this.service.FindOne(id);
+  @Get('/:user_id')
+  FindOne(@Param('user_id') user_id: string) {
+    return this.service.FindOne(user_id);
   }
 
-  @Put('/:id')
-  Update(@Param('id') id: string, @Body() body: UserDto) {
-    return this.service.Update(id, body);
+  @Put('/:user_id')
+  Update(@Param('user_id') user_id: string, @Body() body: UserDto) {
+    return this.service.Update(user_id, body);
   }
 
-  @Delete('/:id')
-Delete(@Param('id') id: string): Promise<DeleteResult> {
-  return this.service.Delete(id);
-}
+  @Delete('/:user_id')
+  Delete(@Param('user_id') user_id: string): Promise<DeleteResult> {
+    return this.service.Delete(user_id);
+  }
+
   @Post('/search')
-  Search(@Query('key') key) {
+  Search(@Query('key') key: string) {
     return this.service.Search(key);
   }
 
-  @Post('faker')
+  @Post('/faker')
   Faker() {
     return this.service.Faker();
   }
