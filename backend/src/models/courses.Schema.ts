@@ -25,6 +25,15 @@ export class Courses {
 
   @Prop({ default: () => new Date(), immutable: true })
   created_at: Date;
+
+  @Prop({ type: [{ type: Object }], default: [] })
+  resources: { type: string; url: string }[];
+
+  @Prop({ type: [{ type: Object }], default: [] })
+  hierarchy: {
+    section: string;
+    lessons: { title: string; content: string }[];
+  }[];
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Courses);

@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CourseDto } from 'src/dto/courses.dto';
+import { CourseDto, SectionDto } from 'src/dto/courses.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('courses')
 export class CoursesController 
@@ -44,4 +46,22 @@ export class CoursesController
     {
         return this.service.Search(key);
     }
+
+    @Post('/:id/resources')
+    @UseInterceptors(FileInterceptor('file'))
+    AddResource(
+    @Param('id') courseId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const resource = {
+      type: file.mimetype.startsWith('video') ? 'video' : 'pdf',
+      url: `http://localhost:5000/uploads/${file.filename}`,
+    };
+    return this.service.AddResource(courseId, resource);
+  }
+
+  @Post('/:id/hierarchy')
+  AddHierarchy(@Param('id') courseId: string, @Body() hierarchy: SectionDto[]) {
+    return this.service.AddHierarchy(courseId, hierarchy);
+  }
 }

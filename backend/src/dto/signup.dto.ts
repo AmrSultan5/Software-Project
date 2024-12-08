@@ -13,6 +13,10 @@ import {
   export class SignUpDto {
     @IsNotEmpty()
     @IsString()
+    user_id: string;
+
+    @IsNotEmpty()
+    @IsString()
     readonly name: string;
   
     @IsNotEmpty()
