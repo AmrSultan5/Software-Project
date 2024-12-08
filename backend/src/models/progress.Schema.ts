@@ -7,16 +7,16 @@ export type ProgressDocument = Progress & Document;
 
 @Schema({ timestamps: true })
 export class Progress {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'users', required: true })
   userId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Course', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Courses', required: true })
   courseId: Types.ObjectId;
 
   @Prop({ type: Number, min: 0, max: 100, required: true })
   completionPercentage: number;
 
-  @Prop({ type: Date, required: true })
+  @Prop({ type: Date})
   lastAccessed: Date;
 
   // Engagement Metrics
@@ -34,8 +34,8 @@ export class Progress {
   quizScores: number[];
 
   // Completed Modules (Populate with titles)
-  @Prop({ type: [Types.ObjectId], ref: 'Module', default: [] })
-  completedModules: Types.ObjectId[];
+  @Prop({ type: [Types.ObjectId], ref: 'Modules', default: [] })
+  completedModules: Types.ObjectId;
 }
 
 export const ProgressSchema = SchemaFactory.createForClass(Progress);

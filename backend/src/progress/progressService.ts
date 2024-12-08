@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Progress , ProgressDocument } from 'src/models/progress.Schema';
+import { Progress} from 'src/models/progress.Schema';
 import { Courses ,CourseDocument } from 'src/models/courses.Schema';
 
 @Injectable()
@@ -18,13 +18,15 @@ export class ProgressService {
       .populate('courseId', 'title') // Populate with 'title' for courses
       .populate('completedModules', 'title') // Populate 'title' for completed modules
       .exec();
+      
   
     return progress.map((p) => ({
       course: p.courseId,
+
       completionPercentage: p.completionPercentage,
       timeSpent: p.timeSpent,
       averageScore: p.averageScore,
-      completedModules: p.completedModules.map((module) => module),
+      completedModules: p.completedModules,
       lastAccessed: p.lastAccessed,
     }));
   }
@@ -41,8 +43,8 @@ export class ProgressService {
   }
 
   // Fetch analytics for courses created by an instructor
-  async getInstructorAnalytics(instructorId: string) {
-    const courses = await this.courseModel.find({ createdBy: instructorId });
+  async getInstructorAnalytics(name: string) {
+    const courses = await this.courseModel.find({ created_by: name });
 
     const analytics = await Promise.all(
       courses.map(async (course) => {
@@ -59,7 +61,7 @@ export class ProgressService {
 
         const totalTimeSpent = progressData.reduce((sum, p) => sum + p.timeSpent, 0);
 
-        return {
+        return { message :"data retrieved",
           course: course.title,
           totalStudents,
           averageCompletion,
@@ -70,5 +72,24 @@ export class ProgressService {
     );
 
     return analytics;
+  }
+
+  async getAllProgress() {
+    const progress = await this.progressModel
+      .find()
+      .populate('courseId', 'title') // Populate with 'title' for courses
+      .populate('completedModules', 'title') // Populate 'title' for completed modules
+      .exec();
+      
+  
+    return progress.map((p) => ({
+      course: p.courseId,
+
+      completionPercentage: p.completionPercentage,
+      timeSpent: p.timeSpent,
+      averageScore: p.averageScore,
+      completedModules: p.completedModules,
+      lastAccessed: p.lastAccessed,
+    }));
   }
 }

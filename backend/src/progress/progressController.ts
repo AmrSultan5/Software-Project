@@ -22,8 +22,13 @@ export class ProgressController {
     return this.progressService.updateStudentProgress(studentId, courseId, updateData);
   }
 
-  @Get('/instructors/:id')
-  async getInstructorAnalytics(@Param('id') instructorId: string) {
-    return this.progressService.getInstructorAnalytics(instructorId);
+  @Get('/instructors/:name')
+  async getInstructorAnalytics(@Param('name') name: string) {
+    console.log("the Name: ", name );
+    return this.progressService.getInstructorAnalytics(name);
+  }
+  @Get('/students')
+  async getAllProgress() {
+    return this.progressService.getAllProgress();
   }
 }
