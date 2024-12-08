@@ -32,16 +32,18 @@ export class UsersService {
     return this.userModel.deleteOne({ user_id }).exec();
   }
 
-  Search(key: string) {
-    const keyword = key
+  Search(key: string, user_id?: string) {
+    const keyword = user_id
+      ? { user_id: { $regex: user_id, $options: 'i' } } // Search by user_id if provided
+      : key
       ? {
           $or: [
             { name: { $regex: key, $options: 'i' } },
             { email: { $regex: key, $options: 'i' } },
-            { user_id: { $regex: key, $options: 'i' } },
           ],
         }
       : {};
+
     return this.userModel.find(keyword).exec();
   }
 

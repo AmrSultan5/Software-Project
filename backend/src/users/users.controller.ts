@@ -10,7 +10,7 @@ export class UsersController {
 
   @Post()
   Add(@Body() body: UserDto): Promise<UserDocument> {
-    return this.service.Add(body); 
+    return this.service.Add(body); // Calls the Add method from the service
   }
 
   @Get()
@@ -34,8 +34,8 @@ export class UsersController {
   }
 
   @Post('/search')
-  Search(@Query('key') key: string) {
-    return this.service.Search(key);
+  Search(@Query('key') key: string, @Query('user_id') user_id?: string) {
+    return this.service.Search(key, user_id); // Pass both key and user_id to the service
   }
 
   @Post('/faker')
