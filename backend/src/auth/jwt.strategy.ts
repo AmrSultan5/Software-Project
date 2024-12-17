@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy){
             throw new UnauthorizedException('Login first to access this!')
         }
 
-        if (role !== 'admin') {
+        if (role !== 'admin' || role !== 'instructor') {
             throw new ForbiddenException('You do not have permission to access this resource');
           }
 
