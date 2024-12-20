@@ -13,6 +13,10 @@ import {
   export class SignUpDto {
     @IsNotEmpty()
     @IsString()
+    user_id: string;
+
+    @IsNotEmpty()
+    @IsString()
     readonly name: string;
   
     @IsNotEmpty()
@@ -45,4 +49,4 @@ import {
     @IsOptional()
     @IsDateString({}, { message: 'createdAt must be a valid ISO date string' })
     readonly createdAt?: string;
-  }  
+  } 

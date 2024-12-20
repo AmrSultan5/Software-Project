@@ -16,10 +16,11 @@ export class AuthService {
     ) {}
 
     async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
-        const { name, email, password,role } = signUpDto
+        const { user_id,name, email, password,role } = signUpDto
 
         const hashedPassword = await bcrypt.hash(password, 10)
         const user = await this.userModel.create({
+            user_id,
             name,
             email,
             password: hashedPassword,
@@ -43,7 +44,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid email or password!')
         }
 
-        const token = this.jwtService.sign({ id: user._id })
+        const token = this.jwtService.sign({ id: user._id, role: user.role })
         return { token }
     }
 }
