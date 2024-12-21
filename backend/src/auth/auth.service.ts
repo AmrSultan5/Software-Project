@@ -32,19 +32,25 @@ export class AuthService {
         return { token }
     }
 
-    async login(loginDto: LoginDto): Promise<{ token: string }> {
+    async login(loginDto: LoginDto): Promise<{ token: string; role: string }> {
         const { email, password } = loginDto;
-
-        const user = await this.userModel.findOne({ email })
-        if(!user){
-            throw new UnauthorizedException('Invalid email or password!')
+      
+        // Find the user by email
+        const user = await this.userModel.findOne({ email });
+        if (!user) {
+          throw new UnauthorizedException('Invalid email or password!');
         }
-        const isPasswordMatched = await bcrypt.compare(password, user.password)
-        if(!isPasswordMatched){
-            throw new UnauthorizedException('Invalid email or password!')
+      
+        // Validate the password
+        const isPasswordMatched = await bcrypt.compare(password, user.password);
+        if (!isPasswordMatched) {
+          throw new UnauthorizedException('Invalid email or password!');
         }
-
-        const token = this.jwtService.sign({ id: user._id, role: user.role })
-        return { token }
-    }
+      
+        // Generate a JWT token
+        const token = this.jwtService.sign({ id: user._id, role: user.role });
+      
+        // Return the token and user's role
+        return { token, role: user.role };
+      }      
 }

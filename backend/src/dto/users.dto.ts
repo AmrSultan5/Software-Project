@@ -1,10 +1,10 @@
-import { IsString, IsEmail, IsNotEmpty, IsOptional, IsEnum, IsArray } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsOptional, IsEnum, IsArray, IsNumber } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class UserDto {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  readonly user_id: string;
+  readonly user_id: number;
 
   @IsString()
   @IsNotEmpty()

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
 import { UserDto } from 'src/dto/users.dto';
 import { UsersService } from './users.service';
 import { DeleteResult } from 'mongodb';
@@ -19,23 +19,27 @@ export class UsersController {
   }
 
   @Get('/:user_id')
-  FindOne(@Param('user_id') user_id: string) {
-    return this.service.FindOne(user_id);
+async FindOne(@Param('user_id') user_id: number) {
+  const user = await this.service.FindOne(user_id);
+  if (!user) {
+    throw new NotFoundException(`User with ID ${user_id} not found.`);
   }
+  return user;
+}
 
   @Put('/:user_id')
-  Update(@Param('user_id') user_id: string, @Body() body: UserDto) {
+  Update(@Param('user_id') user_id: number, @Body() body: UserDto) {
     return this.service.Update(user_id, body);
   }
 
   @Delete('/:user_id')
-  Delete(@Param('user_id') user_id: string): Promise<DeleteResult> {
+  Delete(@Param('user_id') user_id: number): Promise<DeleteResult> {
     return this.service.Delete(user_id);
   }
 
   @Post('/search')
-  Search(@Query('key') key: string, @Query('user_id') user_id?: string) {
-    return this.service.Search(key, user_id); // Pass both key and user_id to the service
+  Search(@Query('user_id') user_id: number) {
+    return this.service.Search(user_id); // Pass both key and user_id to the service
   }
 
   @Post('/faker')

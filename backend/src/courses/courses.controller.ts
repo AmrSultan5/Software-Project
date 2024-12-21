@@ -11,7 +11,6 @@ export class CoursesController
     constructor(private readonly service: CoursesService){};
 
     @Post()
-    @UseGuards(AuthGuard())
     CreateCourse(@Body() body: CourseDto)
     {
         return this.service.CreateCourse(body);
