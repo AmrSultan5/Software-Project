@@ -8,11 +8,12 @@ import {
     MinLength,
     IsUrl,
     IsMongoId,
+    IsNumber,
   } from 'class-validator';
   
   export class SignUpDto {
     @IsNotEmpty()
-    @IsString()
+    @IsNumber()
     user_id: string;
 
     @IsNotEmpty()

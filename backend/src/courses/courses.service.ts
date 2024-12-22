@@ -57,8 +57,8 @@ export class CoursesService
                 ],
             }
             : {};
-        return this.courseModel.find(keyword);
-    }
+        return this.courseModel.find(keyword).exec().then((result) => result || []);
+    }    
     
 
     async AddResource(courseId: string, resource: ResourceDto) {

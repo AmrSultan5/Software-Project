@@ -18,34 +18,32 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  FindOne(user_id: string) {
+  FindOne(user_id: number) {
     return this.userModel.findOne({ user_id }).exec();
   }
 
-  Update(user_id: string, body: UserDto) {
+  Update(user_id: number, body: UserDto) {
     return this.userModel
       .findOneAndUpdate({ user_id }, { $set: body }, { new: true })
       .exec();
   }
 
-  Delete(user_id: string): Promise<DeleteResult> {
-    return this.userModel.deleteOne({ user_id }).exec();
-  }
+  Delete(user_id: number): Promise<DeleteResult> {
+    return this.userModel.deleteOne({ user_id }).exec().then((result) => {
+      if (result.deletedCount === 0) {
+        throw new Error(`No user found with user_id: ${user_id}`);
+      }
+      return result;
+    });
+  }    
 
-  Search(key: string, user_id?: string) {
+  Search(user_id: number) {
     const keyword = user_id
-      ? { user_id: { $regex: user_id, $options: 'i' } } // Search by user_id if provided
-      : key
-      ? {
-          $or: [
-            { name: { $regex: key, $options: 'i' } },
-            { email: { $regex: key, $options: 'i' } },
-          ],
-        }
+      ? { user_id: user_id.toString() }
       : {};
-
+  
     return this.userModel.find(keyword).exec();
-  }
+  }   
 
   Faker() {
     for (let index = 0; index < 30; index++) {
