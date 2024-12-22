@@ -35,6 +35,9 @@ export class users{
     @Prop({ type: Date})
     createdAt?: Date;
 
+    @Prop()
+    mfaSecret?: string;
+
 }
 export const UserSchema = SchemaFactory.createForClass(users);
 

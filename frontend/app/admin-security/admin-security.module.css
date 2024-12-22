@@ -1,0 +1,29 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }  
+  .homeIcon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .homeText {
+    font-size: 1rem;
+    color: #007bff;
+  }
+  
+  .homeIcon:hover .homeText {
+    text-decoration: underline;
+  }

@@ -11,6 +11,9 @@ import { UsersModule } from './users/users.module';
 import { ProgressModule } from './progress/progress.module'
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { NotesModule } from './notes/notes.module';
+import { AuditLogSchema } from './models/audit-log.schema';
+import { FailedLoginAttemptSchema} from './models/failed-login.schema';
+import { AdminModule } from './services/admin.module';
 
 @Module({
   imports: [  
@@ -23,7 +26,12 @@ import { NotesModule } from './notes/notes.module';
     UsersModule,
     ProgressModule,
     QuizzesModule,
-    NotesModule],
+    NotesModule,
+    AdminModule,
+    MongooseModule.forFeature([
+      { name: 'AuditLog', schema: AuditLogSchema },
+      { name: 'FailedLogin', schema: FailedLoginAttemptSchema }
+    ]),],
   controllers: [AppController],
   providers: [AppService],
 })

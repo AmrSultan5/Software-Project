@@ -38,12 +38,16 @@ export default function Admin() {
             </Link>
           </li>
           <li className={styles.menuItem}>
-            <FaLock className={styles.icon} />
-            {isSidebarOpen && <span>Security</span>}
+            <Link href="/admin-security" className={styles.menuItem}>
+              <FaLock className={styles.icon} />
+              {isSidebarOpen && <span>Security</span>}
+            </Link>
           </li>
           <li className={styles.menuItem}>
-            <FaDatabase className={styles.icon} />
-            {isSidebarOpen && <span>Backup</span>}
+            <Link href="/admin-backup" className={styles.menuItem}>
+              <FaDatabase className={styles.icon} />
+              {isSidebarOpen && <span>Backup</span>}
+            </Link>
           </li>
           <li className={styles.menuItem}>
             <FaBell className={styles.icon} />
@@ -55,7 +59,6 @@ export default function Admin() {
       {/* Main Content */}
       <div className={styles.content}>
         <h1>Welcome to the admin page!</h1>
-        <p>Manage your platform, including users, courses, security, backups, and notifications!</p>
       </div>
     </div>
   );
