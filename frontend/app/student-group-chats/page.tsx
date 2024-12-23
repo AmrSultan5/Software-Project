@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./student-communication.module.css";
+import styles from "./student-group-chats.module.css";
 
 type CommunicationFeature = {
   id: string;

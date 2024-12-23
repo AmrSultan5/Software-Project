@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./student-access.module.css";
+import styles from "./student-courses.module.css";
 
 type Course = {
   id: string;

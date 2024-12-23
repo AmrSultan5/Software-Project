@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./student-modules.module.css";
+import styles from "./student-adaptive-quizzes.module.css";
 
 type Module = {
   id: string;
