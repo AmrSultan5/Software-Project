@@ -5,14 +5,11 @@ import { ProgressService } from './progressService';
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
 
-
-  
   @Get('/students/:id')
   async getStudentProgress(@Param('id') studentId: string) {
     return this.progressService.getStudentProgress(studentId);
   }
 
-  
   @Post('/students/:id/courses/:courseId')
   async updateStudentProgress(
     @Param('id') studentId: string,
@@ -24,9 +21,9 @@ export class ProgressController {
 
   @Get('/instructors/:name')
   async getInstructorAnalytics(@Param('name') name: string) {
-    console.log("the Name: ", name );
     return this.progressService.getInstructorAnalytics(name);
   }
+
   @Get('/students')
   async getAllProgress() {
     return this.progressService.getAllProgress();

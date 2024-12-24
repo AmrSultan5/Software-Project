@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Progress} from 'src/models/progress.Schema';
-import { Courses ,CourseDocument } from 'src/models/courses.Schema';
+import { Progress } from 'src/models/progress.Schema';
+import { Courses, CourseDocument } from 'src/models/courses.Schema';
 
 @Injectable()
 export class ProgressService {
@@ -11,18 +11,15 @@ export class ProgressService {
     @InjectModel(Courses.name) private courseModel: Model<CourseDocument>,
   ) {}
 
-  // Fetch progress for a specific student
   async getStudentProgress(studentId: string) {
     const progress = await this.progressModel
       .find({ userId: studentId })
-      .populate('courseId', 'title') // Populate with 'title' for courses
-      .populate('completedModules', 'title') // Populate 'title' for completed modules
+      .populate({ path: 'courseId', select: 'title description category difficulty_level' })
+      .populate({ path: 'completedModules', select: 'title' })
       .exec();
-      
-  
+
     return progress.map((p) => ({
       course: p.courseId,
-
       completionPercentage: p.completionPercentage,
       timeSpent: p.timeSpent,
       averageScore: p.averageScore,
@@ -30,9 +27,7 @@ export class ProgressService {
       lastAccessed: p.lastAccessed,
     }));
   }
-  
 
-  // Update a student's progress
   async updateStudentProgress(studentId: string, courseId: string, updateData: any) {
     const progress = await this.progressModel.findOneAndUpdate(
       { userId: studentId, courseId },
@@ -42,7 +37,6 @@ export class ProgressService {
     return progress;
   }
 
-  // Fetch analytics for courses created by an instructor
   async getInstructorAnalytics(name: string) {
     const courses = await this.courseModel.find({ created_by: name });
 
@@ -61,7 +55,7 @@ export class ProgressService {
 
         const totalTimeSpent = progressData.reduce((sum, p) => sum + p.timeSpent, 0);
 
-        return { message :"data retrieved",
+        return {
           course: course.title,
           totalStudents,
           averageCompletion,
@@ -77,14 +71,12 @@ export class ProgressService {
   async getAllProgress() {
     const progress = await this.progressModel
       .find()
-      .populate('courseId', 'title') // Populate with 'title' for courses
-      .populate('completedModules', 'title') // Populate 'title' for completed modules
+      .populate({ path: 'courseId', select: 'title description category difficulty_level' })
+      .populate({ path: 'completedModules', select: 'title' })
       .exec();
-      
-  
+
     return progress.map((p) => ({
       course: p.courseId,
-
       completionPercentage: p.completionPercentage,
       timeSpent: p.timeSpent,
       averageScore: p.averageScore,

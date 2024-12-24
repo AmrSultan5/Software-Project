@@ -3,7 +3,6 @@ import { Document } from 'mongoose';
 
 export type QuizDocument = Quiz & Document;
 
-
 @Schema({ timestamps: true })
 export class Quiz {
   @Prop({ required: true, unique: true })
@@ -12,10 +11,16 @@ export class Quiz {
   @Prop({ required: true })
   module_id: string;
 
-  @Prop({ required: true, type: [{ question_text: String, options: [String], correct_answer: String }] })
-  questions: { question_text: string, options: string[], correct_answer: string }[];
+  @Prop({
+    required: true,
+    type: [{ question_text: String, options: [String], correct_answer: String }],
+  })
+  questions: { question_text: string; options: string[]; correct_answer: string }[];
 
-  @Prop({ })
+  @Prop({ type: [String], default: [] })
+  completed_by: string[];
+
+  @Prop()
   created_at: Date;
 }
 

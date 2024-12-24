@@ -4,35 +4,40 @@ import { QuizDto } from 'src/dto/quizzes.dto';
 
 @Controller('quizzes')
 export class QuizController {
-    constructor(private readonly service: QuizService) {};
+  constructor(private readonly service: QuizService) {}
 
-    @Post()
-    createQuiz(@Body() body: QuizDto) {
-        return this.service.createQuiz(body);
-    }
+  @Post()
+  createQuiz(@Body() body: QuizDto) {
+    return this.service.createQuiz(body);
+  }
 
-    @Get()
-    getAllQuizzes() {
-        return this.service.getAllQuizzes();
-    }
+  @Get()
+  getAllQuizzes() {
+    return this.service.getAllQuizzes();
+  }
 
-    @Get('/:id')
-    getQuizById(@Param('id') id: string) {
-        return this.service.getQuizById(id);
-    }
+  @Get('/:id')
+  getQuizById(@Param('id') id: string) {
+    return this.service.getQuizById(id);
+  }
 
-    @Put('/:id')
-    updateQuiz(@Param('id') id: string, @Body() body: QuizDto) {
-        return this.service.updateQuiz(id, body);
-    }
+  @Put('/:id')
+  updateQuiz(@Param('id') id: string, @Body() body: QuizDto) {
+    return this.service.updateQuiz(id, body);
+  }
 
-    @Delete('/:id')
-    deleteQuiz(@Param('id') id: string) {
-        return this.service.deleteQuiz(id);
-    }
+  @Delete('/:id')
+  deleteQuiz(@Param('id') id: string) {
+    return this.service.deleteQuiz(id);
+  }
 
-    @Post('/search')
-    searchQuiz(@Query('key') key: string) {
-        return this.service.searchQuiz(key);
-    }
+  @Post('/search')
+  searchQuiz(@Query('key') key: string) {
+    return this.service.searchQuiz(key);
+  }
+
+  @Put('/:id/complete')
+  markQuizAsCompleted(@Param('id') id: string, @Body('user_id') userId: string) {
+    return this.service.markQuizAsCompleted(id, userId);
+  }
 }
