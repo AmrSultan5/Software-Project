@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AiFillHome } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import styles from "./instructor-courses.module.css";
+import { AuthContext } from "../contexts/AuthContext"; // Adjust the path as needed
 
 /** ---------- TYPES ---------- **/
 type Resource = {
@@ -27,6 +28,7 @@ type Course = {
   category: string;
   difficulty_level: "Beginner" | "Intermediate" | "Advanced";
   created_by: string;
+  taught_by: string;
   resources?: Resource[];
   hierarchy?: Section[];
 };
@@ -38,7 +40,6 @@ type ModuleData = {
   title: string;
   content?: string;
   resources: string[];
-  user_id: string;
 };
 
 /** Matches QuizDto on the backend **/
@@ -54,7 +55,8 @@ type Quiz = {
 };
 
 export default function Courses() {
-  /** ----------- STATE: Courses & Search ----------- **/
+  /** ----------- CONTEXT: Auth ----------- **/
+  const { userId, token } = useContext(AuthContext);
   const [courses, setCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +71,9 @@ export default function Courses() {
     description: "",
     category: "",
     difficulty_level: "Beginner",
-    created_by: "",
+    created_by: userId ? userId : "",
+    taught_by: userId ? userId : "",
+    // taught_by will be set automatically
   });
 
   /** ----------- STATE: Delete Course ----------- **/
@@ -88,8 +92,7 @@ export default function Courses() {
     course_id: "",
     title: "",
     content: "",
-    resources: [],
-    user_id: "",
+    resources: []
   });
 
   /** ----------- STATE: Manage Quizzes Modal ----------- **/
@@ -114,13 +117,23 @@ export default function Courses() {
    * FETCH COURSES
    ********************************************/
   useEffect(() => {
+    if (!userId) {
+      setError("User not authenticated.");
+      setLoading(false);
+      return;
+    }
+
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/courses", {
+        const response = await fetch(`http://localhost:5000/api/courses/instructor/${userId}`, {
           method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token if backend requires authentication
+          },
         });
         if (!response.ok) {
-          throw new Error("Failed to fetch courses.");
+          throw new Error("Failed to fetch instructor courses.");
         }
         const data: Course[] = await response.json();
         setCourses(data);
@@ -134,7 +147,7 @@ export default function Courses() {
     };
 
     fetchCourses();
-  }, []);
+  }, [userId, token]);
 
   /********************************************
    * SEARCH COURSES
@@ -152,7 +165,7 @@ export default function Courses() {
         course.description,
         course.category,
         course.difficulty_level,
-        course.created_by,
+        course.taught_by,
         course.course_id,
       ]
         .filter(Boolean) // remove undefined/null
@@ -179,10 +192,17 @@ export default function Courses() {
     try {
       const response = await fetch(
         `http://localhost:5000/api/courses/${courseToDelete.course_id}`,
-        { method: "DELETE" }
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token if needed
+          },
+        }
       );
       if (!response.ok) {
-        throw new Error("Failed to delete the course.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete the course.");
       }
       const updated = courses.filter(
         (c) => c.course_id !== courseToDelete.course_id
@@ -193,7 +213,7 @@ export default function Courses() {
       alert("Course deleted successfully!");
     } catch (err) {
       console.error("Error deleting course:", err);
-      alert("Failed to delete the course. Please try again.");
+      alert(err || "Failed to delete the course. Please try again.");
     }
   };
 
@@ -207,21 +227,38 @@ export default function Courses() {
       description: "",
       category: "",
       difficulty_level: "Beginner",
-      created_by: "",
+      created_by:userId ? userId : "",
+      taught_by: userId ? userId : ""
+      // taught_by will be set automatically
     });
     setShowAddCourseModal(true);
   };
 
   const handleAddCourse = async () => {
     try {
+      // Ensure that userId is available
+      if (!userId) {
+        setError("User not authenticated.");
+        return;
+      }
+
+      // Create a new course object with `taught_by` set to `userId`
+      const courseToAdd = {
+        ...newCourse,
+        taught_by: userId.toString(), // Ensure it's a string
+      };
+
       const response = await fetch(`http://localhost:5000/api/courses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCourse),
+        body: JSON.stringify(courseToAdd),
       });
+
       if (!response.ok) {
-        throw new Error("Failed to add the course.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add the course.");
       }
+
       const createdCourse: Course = await response.json();
       setCourses([...courses, createdCourse]);
       setFilteredCourses([...courses, createdCourse]);
@@ -229,7 +266,7 @@ export default function Courses() {
       alert("Course added successfully!");
     } catch (err) {
       console.error("Error adding course:", err);
-      alert("Failed to add the course. Please try again.");
+      alert(err || "Failed to add the course. Please try again.");
     }
   };
 
@@ -244,10 +281,17 @@ export default function Courses() {
       // Only fetch modules for the SELECTED course
       const response = await fetch(
         `http://localhost:5000/api/modules/course/${course.course_id}`,
-        { method: "GET" }
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token if needed
+          },
+        }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch modules.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch modules.");
       }
       const data: ModuleData[] = await response.json();
       setModulesForCourse(data);
@@ -274,8 +318,7 @@ export default function Courses() {
       course_id: selectedCourse.course_id,
       title: "",
       content: "",
-      resources: [],
-      user_id: "",
+      resources: []
     });
     setShowAddModuleModal(true);
   };
@@ -284,11 +327,15 @@ export default function Courses() {
     try {
       const response = await fetch(`http://localhost:5000/api/modules`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include token if needed
+        },
         body: JSON.stringify(newModule),
       });
       if (!response.ok) {
-        throw new Error("Failed to add module.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add module.");
       }
       const createdModule: ModuleData = await response.json();
       // Insert the new module only into the local array for this course
@@ -297,7 +344,7 @@ export default function Courses() {
       alert("Module added successfully!");
     } catch (err) {
       console.error("Error adding module:", err);
-      alert("Failed to add module. Please try again.");
+      alert(err || "Failed to add module. Please try again.");
     }
   };
 
@@ -317,10 +364,17 @@ export default function Courses() {
     try {
       const response = await fetch(
         `http://localhost:5000/api/quizzes?module_id=${module.module_id}`,
-        { method: "GET" }
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token if needed
+          },
+        }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch quizzes.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch quizzes.");
       }
       const quizData: Quiz[] = await response.json();
       setQuizzesForModule(quizData);
@@ -360,11 +414,15 @@ export default function Courses() {
     try {
       const response = await fetch(`http://localhost:5000/api/quizzes`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include token if needed
+        },
         body: JSON.stringify(newQuiz),
       });
       if (!response.ok) {
-        throw new Error("Failed to add quiz.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add quiz.");
       }
       const createdQuiz: Quiz = await response.json();
 
@@ -374,7 +432,7 @@ export default function Courses() {
       alert("Quiz added successfully!");
     } catch (err) {
       console.error("Error adding quiz:", err);
-      alert("Failed to add quiz. Please try again.");
+      alert(err || "Failed to add quiz. Please try again.");
     }
   };
 
@@ -386,7 +444,7 @@ export default function Courses() {
    * RENDER
    ********************************************/
   if (loading) return <div>Loading courses...</div>;
-  if (error) return <div>{error}</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.container}>
@@ -421,16 +479,12 @@ export default function Courses() {
         {filteredCourses.map((course) => (
           <div key={course.course_id} className={styles.courseCard}>
             <h2>{course.title}</h2>
-            <p>{course.course_id}</p>
             <p>{course.description || "No description available."}</p>
             <p>
               <strong>Category:</strong> {course.category}
             </p>
             <p>
               <strong>Difficulty:</strong> {course.difficulty_level}
-            </p>
-            <p>
-              <strong>Created By:</strong> {course.created_by}
             </p>
 
             {/* Manage Modules */}
@@ -489,12 +543,14 @@ export default function Courses() {
               placeholder="Course ID"
               value={newCourse.course_id}
               onChange={(e) => setNewCourse({ ...newCourse, course_id: e.target.value })}
+              required
             />
             <input
               type="text"
               placeholder="Title"
               value={newCourse.title}
               onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
+              required
             />
             <textarea
               placeholder="Description"
@@ -506,6 +562,7 @@ export default function Courses() {
               placeholder="Category"
               value={newCourse.category}
               onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
+              required
             />
             <select
               value={newCourse.difficulty_level}
@@ -518,22 +575,23 @@ export default function Courses() {
                     | "Advanced",
                 })
               }
+              required
             >
               <option value="Beginner">Beginner</option>
               <option value="Intermediate">Intermediate</option>
               <option value="Advanced">Advanced</option>
             </select>
-            <input
-              type="text"
-              placeholder="Created By"
-              value={newCourse.created_by}
-              onChange={(e) => setNewCourse({ ...newCourse, created_by: e.target.value })}
-            />
+            {/* No need for 'taught_by' input */}
             <div className={styles.actionButtons}>
-              <button className={styles.saveButton} onClick={handleAddCourse}>
+              <button
+                type="button"
+                className={styles.saveButton}
+                onClick={handleAddCourse}
+              >
                 Save Course
               </button>
               <button
+                type="button"
                 className={styles.cancelButton}
                 onClick={() => setShowAddCourseModal(false)}
               >
@@ -594,12 +652,14 @@ export default function Courses() {
               placeholder="Module ID"
               value={newModule.module_id}
               onChange={(e) => setNewModule({ ...newModule, module_id: e.target.value })}
+              required
             />
             <input
               type="text"
               placeholder="Title"
               value={newModule.title}
               onChange={(e) => setNewModule({ ...newModule, title: e.target.value })}
+              required
             />
             <textarea
               placeholder="Content"
@@ -615,12 +675,6 @@ export default function Courses() {
                   resources: e.target.value.split(",").map((r) => r.trim()),
                 })
               }
-            />
-            <input
-              type="text"
-              placeholder="User ID"
-              value={newModule.user_id}
-              onChange={(e) => setNewModule({ ...newModule, user_id: e.target.value })}
             />
             <div className={styles.actionButtons}>
               <button className={styles.saveButton} onClick={handleAddModule}>
@@ -677,8 +731,9 @@ export default function Courses() {
               placeholder="Quiz ID"
               value={newQuiz.quiz_id}
               onChange={(e) => setNewQuiz({ ...newQuiz, quiz_id: e.target.value })}
+              required
             />
-            {/* The module_id is already pre-filled in openAddQuizModal() */}
+            {/* The module_id is already pre-filled */}
             <div style={{ marginTop: "10px" }}>
               {newQuiz.questions.map((question, idx) => (
                 <div key={idx} style={{ marginBottom: "10px" }}>
@@ -691,6 +746,7 @@ export default function Courses() {
                       updatedQuestions[idx].question_text = e.target.value;
                       setNewQuiz({ ...newQuiz, questions: updatedQuestions });
                     }}
+                    required
                   />
                   <br />
                   <input
@@ -704,6 +760,7 @@ export default function Courses() {
                         .map((opt) => opt.trim());
                       setNewQuiz({ ...newQuiz, questions: updatedQuestions });
                     }}
+                    required
                   />
                   <br />
                   <input
@@ -715,12 +772,14 @@ export default function Courses() {
                       updatedQuestions[idx].correct_answer = e.target.value;
                       setNewQuiz({ ...newQuiz, questions: updatedQuestions });
                     }}
+                    required
                   />
                 </div>
               ))}
             </div>
             <button
               className={styles.addLessonButton}
+              type="button"
               onClick={() => {
                 setNewQuiz({
                   ...newQuiz,

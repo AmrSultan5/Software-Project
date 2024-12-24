@@ -12,7 +12,7 @@ import * as speakeasy from 'speakeasy';
 
 // Define the LoginResponse type
 export type LoginResponse =
-  | { token: string; role: string } // Non-MFA response
+  | { token: string; role: string; id: string } // Non-MFA response
   | { mfaEnabled: true };          // MFA response
 
 @Injectable()
@@ -66,7 +66,7 @@ export class AuthService {
     }
   
     // If MFA is not enabled, return the token and role
-    return { token, role: user.role };
+    return { token, role: user.role, id:user.id };
   }  
 
   async findOne(filter: Record<string, any>) {

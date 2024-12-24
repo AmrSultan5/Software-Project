@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, users } from 'src/models/users.Schema';
+import { CourseDocument, Courses } from 'src/models/courses.Schema';
 import { UserDto } from 'src/dto/users.dto';
 import { DeleteResult } from 'mongodb';
 import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(users.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(users.name) private userModel: Model<UserDocument>,
+    @InjectModel(Courses.name) private courseModel: Model<CourseDocument>
+) {}
 
   Add(body: UserDto): Promise<UserDocument> {
     return this.userModel.create(body); // Saves the new user to the database
@@ -62,5 +66,27 @@ export class UsersService {
       this.userModel.create(fakeUser);
     }
     return 'success';
+  }
+
+  async GetEnrolledStudents(instructorId: string): Promise<UserDocument[]> {
+    // Step 1: Find courses taught by the instructor
+    const coursesTaught = await this.courseModel.find({ taught_by: instructorId }).exec();
+
+    console.log(coursesTaught)
+    if (!coursesTaught.length) {
+      return []; // Return empty array if no courses found
+    }
+
+    const courseIds = coursesTaught.map(course => course.course_id); // Assuming course_id is unique
+
+    console.log(courseIds)
+
+    // Step 2: Find students enrolled in these courses
+    const students = this.userModel.find({
+      role: 'student',
+      coursesEnrolled: { $in: courseIds },
+    }).exec();
+
+    return students;
   }
 }

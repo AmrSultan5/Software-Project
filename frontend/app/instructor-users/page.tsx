@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "../contexts/AuthContext"; // Adjust the path as needed
 
 type User = {
-  user_id: string;
+  user_id: number;
   name: string;
   email: string;
-  password: string;
   role: string;
+  password:string,
   profile_picture_url?: string;
   coursesEnrolled?: string[];
 };
@@ -19,7 +20,7 @@ type Course = {
   description?: string;
   category: string;
   difficulty_level: string;
-  created_by: string;
+  taught_by: number; // Changed from created_by to taught_by
   hierarchy?: Section[];
 };
 
@@ -28,14 +29,13 @@ type Lesson = {
   content: string;
 };
 
-
 type Section = {
   section: string;
   lessons: Lesson[];
 };
 
-
 export default function Users() {
+  const { userId,  } = useContext(AuthContext);
   const [courses, setCourses] = useState<Course[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,23 +69,32 @@ export default function Users() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchEnrolledStudents();
     fetchCourses();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchEnrolledStudents = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:5000/api/users", { method: "GET" });
-      if (!response.ok) throw new Error("Failed to fetch users.");
-      const data: User[] = await response.json();
-      const studentData: User[] = data.filter(user => user.role === "student");
 
-      setUsers(studentData);
+      const response = await fetch(
+        `http://localhost:5000/api/users/enrolled-in-instructor-courses/${userId}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch enrolled students.");
+      }
+
+      const data: User[] = await response.json();
+      setUsers(data);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-      console.error(errorMessage);
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
+      console.error("Error fetching enrolled students:", errorMessage);
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -98,12 +107,17 @@ export default function Users() {
     setError(null);
     try {
       if (!searchQuery.trim()) {
-        await fetchUsers(); // Reset to all users if search query is empty
+        await fetchEnrolledStudents(); // Reset to all users if search query is empty
         return;
       }
-      const response = await fetch(`http://localhost:5000/api/users/${searchQuery}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/users/enrolled-in-instructor-courses/search?query=${encodeURIComponent(
+          searchQuery
+        )}`,
+        {
+          method: "GET",
+        }
+      );
       if (response.status === 404) {
         setUsers([]); // Clear users list if no match
         throw new Error("User not found.");
@@ -111,10 +125,11 @@ export default function Users() {
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-      const data: User = await response.json();
-      setUsers([data]); // Show the matching user
+      const data: User[] = await response.json();
+      setUsers(data); // Show the matching users
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
       console.error(errorMessage);
       setError(errorMessage);
     } finally {
@@ -122,16 +137,19 @@ export default function Users() {
     }
   };
 
-  const handleDeleteUser = async (user_id: string) => {
+  const handleDeleteUser = async (user_id: number) => {
     if (!confirm("Are you sure you want to delete this user?")) return;
     setSaving(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${user_id}`, { method: "DELETE" });
+      const response = await fetch(`http://localhost:5000/api/users/${user_id}`, {
+        method: "DELETE",
+      });
       if (!response.ok) throw new Error("Failed to delete user.");
       setUsers(users.filter((user) => user.user_id !== user_id)); // Update UI
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
       console.error(errorMessage);
       setError(errorMessage);
     } finally {
@@ -141,11 +159,12 @@ export default function Users() {
 
   const handleAddUser = () => {
     setEditUser({
-      user_id: "",
+      user_id: 0, // Initialize with 0 or appropriate default
       name: "",
       email: "",
       password: "",
-      role: "",
+      role: "student",
+      coursesEnrolled: [],
     });
     setIsEditing(false);
     setShowModal(true);
@@ -158,18 +177,14 @@ export default function Users() {
   };
 
   const handleSaveUser = async (user: User) => {
-    if (!user.name || !user.email || !user.role || !user.password || (!isEditing && !user.user_id)) {
-      alert("Please fill out all fields.");
-      return;
-    }
-
-    const parsedUser = {
-      ...user,
-      user_id: isEditing ? user.user_id : Number(user.user_id),
-    };
-
-    if (!isEditing && isNaN(Number(parsedUser.user_id))) {
-      alert("User ID must be a valid number.");
+    if (
+      !user.name ||
+      !user.email ||
+      !user.role ||
+      (!isEditing && !user.user_id) ||
+      (!isEditing && isNaN(user.user_id))
+    ) {
+      alert("Please fill out all required fields correctly.");
       return;
     }
 
@@ -178,13 +193,13 @@ export default function Users() {
     try {
       const method = isEditing ? "PUT" : "POST";
       const url = isEditing
-        ? `http://localhost:5000/api/users/${parsedUser.user_id}`
+        ? `http://localhost:5000/api/users/${user.user_id}`
         : "http://localhost:5000/api/users";
 
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsedUser),
+        body: JSON.stringify(user),
       });
 
       if (!response.ok) {
@@ -193,10 +208,12 @@ export default function Users() {
       }
 
       setShowModal(false);
-      fetchUsers();
+      // Refetch enrolled students after adding/editing
+      await fetchEnrolledStudents();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-      console.error(errorMessage);
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
+      console.error("Error saving user:", errorMessage);
       setError(errorMessage);
     } finally {
       setSaving(false);
@@ -208,17 +225,20 @@ export default function Users() {
 
   return (
     <div className="container mx-auto p-5 text-black">
-      <button onClick={() => router.push("/instructor")} className="bg-blue-500 text-white p-2 rounded mb-5">
+      <button
+        onClick={() => router.push("/instructor")}
+        className="bg-blue-500 text-white p-2 rounded mb-5"
+      >
         Home
       </button>
 
-      <h1 className="text-2xl font-bold mb-5">Students Management</h1>
+      <h1 className="text-2xl font-bold mb-5">Students Enrolled in Your Courses</h1>
 
       {/* Search */}
       <form onSubmit={handleSearch} className="mb-5 flex gap-2">
         <input
           type="text"
-          placeholder="Search users..."
+          placeholder="Search students..."
           className="border p-2 flex-1 text-black"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -228,6 +248,11 @@ export default function Users() {
         </button>
       </form>
 
+      {/* Add User Button */}
+      <button onClick={handleAddUser} className="bg-green-500 text-white p-2 rounded mb-5">
+        Add Student
+      </button>
+
       {/* Users Table */}
       <table className="w-full border text-black">
         <thead>
@@ -235,8 +260,8 @@ export default function Users() {
             <th className="border p-2">User-ID</th>
             <th className="border p-2">Name</th>
             <th className="border p-2">Email</th>
-            <th className="border p-2">Role</th>
-            <th className="border p-2">Courses enrolled</th>
+            <th className="border p-2">Courses Enrolled</th>
+            <th className="border p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -245,20 +270,22 @@ export default function Users() {
               <td className="border p-2">{user.user_id}</td>
               <td className="border p-2">{user.name}</td>
               <td className="border p-2">{user.email}</td>
-              <td className="border p-2">{user.role}</td>
-               <td className="border p-2">
-                  {(user.coursesEnrolled || [])
-                    .map((courseId) => {
-                      const course = courses.find((c) => c.course_id === courseId);
-                      return course?.title;
-                    })
-                    .join(", ")}
-                </td>
               <td className="border p-2">
-                <button onClick={() => handleEditUser(user)} className="text-blue-500 mr-2">
+                {user.coursesEnrolled && user.coursesEnrolled.length > 0
+                  ? user.coursesEnrolled.join(", ")
+                  : "None"}
+              </td>
+              <td className="border p-2">
+                <button
+                  onClick={() => handleEditUser(user)}
+                  className="text-blue-500 mr-2"
+                >
                   Edit
                 </button>
-                <button onClick={() => handleDeleteUser(user.user_id)} className="text-red-500">
+                <button
+                  onClick={() => handleDeleteUser(user.user_id)}
+                  className="text-red-500"
+                >
                   Delete
                 </button>
               </td>
@@ -267,22 +294,17 @@ export default function Users() {
         </tbody>
       </table>
 
-      {/* Add User Button at the End */}
-      <div className="mt-5">
-        <button onClick={handleAddUser} className="bg-green-500 text-white p-2 rounded">
-          Add User
-        </button>
-      </div>
-
-      {/* Modal */}
-      {showModal && (
+      {/* Modal for Add/Edit User */}
+      {showModal && editUser && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-5 rounded w-1/3">
-            <h2 className="text-xl font-bold mb-5">{isEditing ? "Edit User" : "Add User"}</h2>
+            <h2 className="text-xl font-bold mb-5">
+              {isEditing ? "Edit Student" : "Add Student"}
+            </h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (editUser) handleSaveUser(editUser);
+                handleSaveUser(editUser);
               }}
             >
               {!isEditing && (
@@ -290,57 +312,45 @@ export default function Users() {
                   type="number"
                   placeholder="User ID"
                   className="border p-2 w-full mb-2 text-black"
-                  value={editUser?.user_id || ""}
+                  value={editUser.user_id || ""}
                   onChange={(e) =>
-                    setEditUser((prev) =>
-                      prev ? { ...prev, user_id: e.target.value } : prev
-                    )
+                    setEditUser({ ...editUser, user_id: Number(e.target.value) })
                   }
+                  required
                 />
               )}
               <input
                 type="text"
                 placeholder="Name"
                 className="border p-2 w-full mb-2 text-black"
-                value={editUser?.name || ""}
-                onChange={(e) =>
-                  setEditUser((prev) =>
-                    prev ? { ...prev, name: e.target.value } : prev
-                  )
-                }
+                value={editUser.name || ""}
+                onChange={(e) => setEditUser({ ...editUser, name: e.target.value })}
+                required
               />
               <input
                 type="email"
                 placeholder="Email"
                 className="border p-2 w-full mb-2 text-black"
-                value={editUser?.email || ""}
-                onChange={(e) =>
-                  setEditUser((prev) =>
-                    prev ? { ...prev, email: e.target.value } : prev
-                  )
-                }
+                value={editUser.email || ""}
+                onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+                required
               />
               <input
                 type="password"
                 placeholder="Password"
                 className="border p-2 w-full mb-2 text-black"
-                value={editUser?.password || ""}
-                onChange={(e) =>
-                  setEditUser((prev) =>
-                    prev ? { ...prev, password: e.target.value } : prev
-                  )
-                }
+                value={editUser.password || ""}
+                onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
+                required
               />
               <select
                 className="border p-2 w-full mb-2 text-black"
-                value={editUser?.role || ""}
-                onChange={(e) =>
-                  setEditUser((prev) =>
-                    prev ? { ...prev, role: e.target.value } : prev
-                  )
-                }
+                value={editUser.role || "student"}
+                onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                required
               >
-                <option value="student">student</option>
+                <option value="student">Student</option>
+                {/* Add other roles if necessary */}
               </select>
               <label className="font-semibold mb-1 block text-black">
                 Enroll in Courses:
@@ -348,10 +358,10 @@ export default function Users() {
               <select
                 multiple
                 className="border p-2 w-full mb-2 text-black"
-                value={editUser?.coursesEnrolled || []}
+                value={editUser.coursesEnrolled || []}
                 onChange={(e) => {
                   const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-                  setEditUser((prev) => prev ? { ...prev, coursesEnrolled: selectedValues } : null);
+                  setEditUser({ ...editUser, coursesEnrolled: selectedValues });
                 }}
               >
                 {courses.map((course) => (
@@ -360,7 +370,11 @@ export default function Users() {
                   </option>
                 ))}
               </select>
-              <button type="submit" className="bg-blue-500 text-white p-2 w-full" disabled={saving}>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white p-2 w-full"
+                disabled={saving}
+              >
                 {saving ? "Saving..." : "Save"}
               </button>
               <button

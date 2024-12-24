@@ -40,6 +40,12 @@ export class CoursesController
         return this.service.DeleteCourse(id);
     }
 
+    @Get('/instructor/:id')
+    FindCourse(@Param('id') id:string)
+    {
+        return this.service.FindCourseByInstructorID(id);
+    }
+
     @Post('/search')
     Search(@Query('key') key)
     {

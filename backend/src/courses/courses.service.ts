@@ -77,5 +77,11 @@ export class CoursesService
           { new: true },
         );
       }
+
+      async FindCourseByInstructorID(instructorID: string) {
+        return this.courseModel.find(
+            {taught_by: instructorID}
+        )
+      }
       
 }

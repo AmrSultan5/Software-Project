@@ -1,0 +1,49 @@
+.container {
+  padding: 20px;
+  background-color: #f7f9fc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.studentsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.studentCard {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 300px;
+  text-align: left;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.studentCard h2 {
+  font-size: 1.5rem;
+  color: #000;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.studentCard p {
+  font-size: 1rem;
+  color: #333;
+  margin: 5px 0;
+  text-align: center;
+}
