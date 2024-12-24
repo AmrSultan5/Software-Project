@@ -116,6 +116,12 @@ export class CoursesService
         }
     
         return enrollments;
-    }                                         
+    }  
+    
+    async FindCourseByInstructorID(instructorID: string) {
+        return this.courseModel.find(
+            {taught_by: instructorID}
+        )
+      }
     
 }

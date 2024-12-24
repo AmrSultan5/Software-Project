@@ -23,6 +23,9 @@ export class Courses {
   @Prop({ required: true })
   created_by: string;
 
+  @Prop({ required: true })
+  taught_by: string;
+
   @Prop({ default: () => new Date(), immutable: true })
   created_at: Date;
 

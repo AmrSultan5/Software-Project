@@ -98,5 +98,10 @@ import {
         throw new UnauthorizedException('Invalid or expired token');
       }
     }
+
+    async findByCourseId(courseId: string): Promise<Modules[]> {
+      return this.moduleModel.find({ course_id: courseId }).exec();
+    }
+
   }
   

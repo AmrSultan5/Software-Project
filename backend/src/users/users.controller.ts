@@ -36,14 +36,22 @@ async FindOne(@Param('user_id') user_id: number) {
   Delete(@Param('user_id') user_id: number): Promise<DeleteResult> {
     return this.service.Delete(user_id);
   }
+  
 
   @Post('/search')
   Search(@Query('user_id') user_id: number) {
     return this.service.Search(user_id); // Pass both key and user_id to the service
   }
 
+  @Get('/enrolled-in-instructor-courses/:instructor_id')
+  async GetEnrolledStudents(@Param('instructor_id') instructor_id: string) {
+    return this.service.GetEnrolledStudents(instructor_id);
+  }
+
   @Post('/faker')
   Faker() {
     return this.service.Faker();
   }
+
+  
 }

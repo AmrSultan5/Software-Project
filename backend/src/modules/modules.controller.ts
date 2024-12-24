@@ -52,4 +52,9 @@ export class ModuleController {
     const userId = req.user.user_id;  
     return this.moduleService.findMyModules(userId);
   }
+
+  @Get('course/:course_id')
+  async findByCourse(@Param('course_id') courseId: string): Promise<Modules[]> {
+    return this.moduleService.findByCourseId(courseId);
+  }
 }
