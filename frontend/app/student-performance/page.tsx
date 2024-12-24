@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import styles from "./student-performance.module.css";
 
-type Metric = {
+type Course = {
   id: string;
-  courseTitle: string;
+  title: string;
   description: string;
   completionPercentage: number;
   averageScore: number;
@@ -14,62 +14,63 @@ type Metric = {
 };
 
 export default function PerformanceTracking() {
-  const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchMetrics = async () => {
+    const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/progress/students/<studentId>", {
+        const response = await fetch("http://localhost:5000/api/courses", {
           method: "GET",
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch metrics.");
+          throw new Error("Failed to fetch courses.");
         }
 
         const data = await response.json();
 
-        const mappedMetrics = data.map((item: any) => ({
-          id: item._id,
-          courseTitle: item.course?.title || "Unknown Course",
-          description: item.course?.description || "No description available",
-          completionPercentage: item.completionPercentage,
-          averageScore: item.averageScore,
-          timeSpent: item.timeSpent,
-          resources: item.course?.resources || [],
+        const mappedCourses = data.map((course: any) => ({
+          id: course._id,
+          title: course.title || "Unknown Course",
+          description: course.description || "No description available",
+          completionPercentage: course.completionPercentage || 0,
+          averageScore: course.averageScore || 0,
+          timeSpent: course.timeSpent || 0,
+          resources: course.resources || [],
         }));
 
-        setMetrics(mappedMetrics);
+        setCourses(mappedCourses);
       } catch (err) {
-        console.error("Error fetching metrics:", err);
+        console.error("Error fetching courses:", err);
         setError("Something went wrong. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMetrics();
+    fetchCourses();
   }, []);
 
-  if (loading) return <div>Loading performance metrics...</div>;
+  if (loading) return <div>Loading courses...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Track Performance</h1>
-      <div className={styles.metricsList}>
-        {metrics.map((metric) => (
-          <div key={metric.id} className={styles.metricCard}>
-            <h2>{metric.courseTitle}</h2>
-            <p>{metric.description}</p>
+      <h1 className={styles.title}>Your Courses</h1>
+      <div className={styles.coursesList}>
+        {courses.map((course) => (
+          <div key={course.id} className={styles.courseCard}>
+            <h2>{course.title}</h2>
+            <p>{course.description}</p>
             <div className={styles.progressBar}>
-              <div style={{ width: `${metric.completionPercentage}%` }}></div>
+              <div style={{ width: `${course.completionPercentage}%` }}></div>
             </div>
-            <p>Completion: {metric.completionPercentage}%</p>
-            <p>Average Score: {metric.averageScore}%</p>
-            <p>Time Spent: {metric.timeSpent} mins</p>
+            <p>Completion: {course.completionPercentage}%</p>
+            <p>Average Score: {course.averageScore}%</p>
+            <p>Time Spent: {course.timeSpent} mins</p>
+            <button className={styles.detailsButton}>View Details</button>
           </div>
         ))}
       </div>

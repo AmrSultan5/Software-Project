@@ -13,46 +13,83 @@
   color: #333;
 }
 
-.metricsList {
+.coursesList {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+  align-items: flex-start;
 }
 
-.metricCard {
+.courseCard {
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   width: 300px;
-  text-align: center;
+  text-align: left;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content inside the card */
 }
 
-.metricCard h2 {
+.courseCard h2 {
   font-size: 1.5rem;
   color: #000;
   margin-bottom: 10px;
+  text-align: center; /* Center align title */
 }
 
-.metricCard p {
+.courseCard p {
   font-size: 1rem;
   color: #333;
   margin: 5px 0;
+  text-align: center; /* Center align description */
 }
 
 .progressBar {
   width: 100%;
-  height: 20px;
-  background-color: #e0e0e0;
-  border-radius: 10px;
-  overflow: hidden;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
   margin: 10px 0;
+  position: relative;
 }
 
-.progressBar div {
+.progressBar > div {
   height: 100%;
+  background-color: #28a745;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.detailsButton {
   background-color: #007bff;
-  border-radius: 10px;
-  transition: width 0.3s ease-in-out;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 15px; /* Add spacing between button and content */
+  align-self: center; /* Center button inside the card */
+}
+
+.detailsButton:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: #f44336;
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 20px;
+}
+
+.loading {
+  color: #333;
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 20px;
 }
