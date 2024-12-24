@@ -18,6 +18,11 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('/api');
   
+
+  app.useGlobalPipes(new ValidationPipe());
+  app.setGlobalPrefix('/api');
+
+ 
   // Serve backups directory
   app.use('/backups', express.static(path.join(__dirname, '../backups')));
 

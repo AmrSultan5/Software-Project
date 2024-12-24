@@ -14,9 +14,14 @@ import { NotesModule } from './notes/notes.module';
 import { AuditLogSchema } from './models/audit-log.schema';
 import { FailedLoginAttemptSchema} from './models/failed-login.schema';
 import { AdminModule } from './services/admin.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { GroupChatsModule } from './group-chats/group-chats.module';
+
 
 @Module({
   imports: [  
+    NotificationsModule,
+    GroupChatsModule,
     ConfigModule.forRoot(), 
     MongooseModule.forRoot(process.env.Mongo),
     CoursesModule,
