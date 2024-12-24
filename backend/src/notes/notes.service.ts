@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Notes, NotesDocument } from 'src/models/notes.Schema';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { NoteDto } from "src/dto/notes.dto";
+import { Notes, NotesDocument } from "src/models/notes.Schema";
 import { DeleteResult } from 'mongodb';
-import { NoteDto } from 'src/dto/notes.dto';
 
 @Injectable()
 export class NotesService {
@@ -17,33 +17,15 @@ export class NotesService {
     return this.notesModel.find();
   }
 
-  OneNote(id: string) {
-    return this.notesModel.findOne({ note_id: id });
+  NotesByCourse(course_id: string) {
+    return this.notesModel.find({ course_id });
   }
 
   UpdateNote(id: string, body: NoteDto) {
-    return this.notesModel.findOneAndUpdate(
-      { note_id: id },
-      { $set: body },
-      { new: true },
-    );
+    return this.notesModel.findByIdAndUpdate(id, { $set: body }, { new: true });
   }
 
   DeleteNote(id: string): Promise<DeleteResult> {
-    return this.notesModel.deleteOne({ note_id: id }).exec();
-  }
-
-  Search(key: string) {
-    const keyword = key
-      ? {
-          $or: [
-            { note_id: { $regex: key, $options: 'i' } },
-            { user_id: { $regex: key, $options: 'i' } },
-            { course_id: { $regex: key, $options: 'i' } },
-            { content: { $regex: key, $options: 'i' } },
-          ],
-        }
-      : {};
-    return this.notesModel.find(keyword);
-  }
+    return this.notesModel.deleteOne({ _id: id }).exec();
+  }  
 }

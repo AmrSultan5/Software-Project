@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { NoteDto } from 'src/dto/notes.dto';
+import { DeleteResult } from 'mongodb';
 
 @Controller('notes')
 export class NotesController {
@@ -16,9 +17,9 @@ export class NotesController {
     return this.service.AllNotes();
   }
 
-  @Get('/:id')
-  OneNote(@Param('id') id: string) {
-    return this.service.OneNote(id);
+  @Get('/:course_id')
+  NotesByCourse(@Param('course_id') course_id: string) {
+    return this.service.NotesByCourse(course_id);
   }
 
   @Put('/:id')
@@ -27,12 +28,7 @@ export class NotesController {
   }
 
   @Delete('/:id')
-  DeleteNote(@Param('id') id: string) {
+  DeleteNote(@Param('id') id: string): Promise<DeleteResult> {
     return this.service.DeleteNote(id);
-  }
-
-  @Post('/search')
-  Search(@Query('key') key: string) {
-    return this.service.Search(key);
-  }
+  }  
 }

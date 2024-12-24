@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CourseDto, SectionDto } from 'src/dto/courses.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -63,4 +63,26 @@ export class CoursesController
   AddHierarchy(@Param('id') courseId: string, @Body() hierarchy: SectionDto[]) {
     return this.service.AddHierarchy(courseId, hierarchy);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/:course_id/enroll')
+  async enrollInCourse(@Param('course_id') course_id: string, @Req() req) {
+      const user_id = req.user.user_id; // Extract `user_id` from validated JWT
+      await this.service.enrollUserInCourse(user_id, course_id);
+      return { message: 'Enrolled successfully' };
+  }
+
+  @Get('/enrollments/test')
+  @UseGuards(AuthGuard('jwt'))
+  async getUserEnrollments(@Req() req) {
+      const user_id = req.user.user_id;
+      console.log("Controller: Fetching enrollments for user_id:", user_id);
+  
+      const enrollments = await this.service.getUserEnrollments(user_id);
+  
+      console.log("Controller: Enrollments fetched:", enrollments);
+      return enrollments || [];
+  }        
+
+
 }

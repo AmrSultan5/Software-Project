@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {jwtDecode} from "jwt-decode";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {jwtDecode} from "jwt-decode";
 import styles from "./login.module.css";
+
+type DecodedToken = {
+  role: string;
+};
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,34 +21,47 @@ export default function Login() {
   const [mfaToken, setMfaToken] = useState(""); // Token to verify OTP
   const router = useRouter();
 
+  useEffect(() => {
+    // Redirect to the appropriate page if already logged in
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+      } catch (err) {
+        console.error("Invalid token detected:", err);
+        localStorage.removeItem("token");
+      }
+    }
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-  
+
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         setError(data.message || "Login failed. Please try again.");
         return;
       }
-  
+
       if (data.mfaEnabled) {
-        // Save the token for OTP verification
-        setMfaToken(data.token); // Ensure this is properly set
+        setMfaToken(data.token); // Save the MFA token
         setShowMfaPopup(true); // Show MFA popup
         return;
       }
-  
-      // Decode token and redirect based on role if MFA is not enabled
-      const decodedToken: { role: string } = jwtDecode(data.token);
+
+      // Save token for regular login
+      localStorage.setItem("token", data.token);
+
+      const decodedToken: DecodedToken = jwtDecode(data.token);
       redirectToRole(decodedToken.role);
     } catch (err) {
       console.error("Login error:", err);
@@ -52,35 +69,31 @@ export default function Login() {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   const handleMfaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-  
+
     try {
       const response = await fetch("http://localhost:5000/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         setError(data.message || "Invalid OTP. Please try again.");
         return;
       }
-  
-      if (!mfaToken) {
-        throw new Error("MFA token is missing or invalid");
-      }
-  
-      // Decode the MFA token to extract the user's role
-      const decodedToken: { role: string } = jwtDecode(mfaToken);
-  
-      // Redirect based on the user's role
+
+      // Save the verified token
+      localStorage.setItem("token", mfaToken);
+
+      const decodedToken: DecodedToken = jwtDecode(mfaToken);
       redirectToRole(decodedToken.role);
     } catch (err) {
       console.error("MFA verification error:", err);
@@ -88,7 +101,7 @@ export default function Login() {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   const redirectToRole = (role: string) => {
     if (role === "admin") {

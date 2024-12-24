@@ -14,6 +14,7 @@ import { NotesModule } from './notes/notes.module';
 import { AuditLogSchema } from './models/audit-log.schema';
 import { FailedLoginAttemptSchema} from './models/failed-login.schema';
 import { AdminModule } from './services/admin.module';
+import { Enrollment, EnrollmentSchema } from './models/enrollment-schema';
 
 @Module({
   imports: [  
@@ -30,7 +31,8 @@ import { AdminModule } from './services/admin.module';
     AdminModule,
     MongooseModule.forFeature([
       { name: 'AuditLog', schema: AuditLogSchema },
-      { name: 'FailedLogin', schema: FailedLoginAttemptSchema }
+      { name: 'FailedLogin', schema: FailedLoginAttemptSchema },
+      { name: Enrollment.name, schema: EnrollmentSchema }
     ]),],
   controllers: [AppController],
   providers: [AppService],

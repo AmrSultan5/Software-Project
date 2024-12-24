@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link"; // Import Link component from Next.js
-import { FaUser, FaBook, FaLock, FaDatabase, FaBell } from "react-icons/fa";
+import { FaUser, FaBook, FaLock, FaDatabase } from "react-icons/fa";
 import styles from "./admin.module.css";
 
 export default function Admin() {
@@ -48,10 +48,6 @@ export default function Admin() {
               <FaDatabase className={styles.icon} />
               {isSidebarOpen && <span>Backup</span>}
             </Link>
-          </li>
-          <li className={styles.menuItem}>
-            <FaBell className={styles.icon} />
-            {isSidebarOpen && <span>Notifications</span>}
           </li>
         </ul>
       </div>

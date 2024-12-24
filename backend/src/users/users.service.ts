@@ -5,13 +5,24 @@ import { UserDocument, users } from 'src/models/users.Schema';
 import { UserDto } from 'src/dto/users.dto';
 import { DeleteResult } from 'mongodb';
 import { faker } from '@faker-js/faker';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(users.name) private userModel: Model<UserDocument>) {}
 
-  Add(body: UserDto): Promise<UserDocument> {
-    return this.userModel.create(body); // Saves the new user to the database
+  async Add(body: UserDto): Promise<UserDocument> {
+    // Hash the password before saving
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(body.password, saltRounds);
+
+    // Replace the plain text password with the hashed password
+    const newUser = {
+      ...body,
+      password: hashedPassword,
+    };
+
+    return this.userModel.create(newUser); // Save the new user to the database
   }
 
   FindAll() {
@@ -35,7 +46,7 @@ export class UsersService {
       }
       return result;
     });
-  }    
+  }
 
   Search(user_id: number) {
     const keyword = user_id
@@ -43,15 +54,20 @@ export class UsersService {
       : {};
   
     return this.userModel.find(keyword).exec();
-  }   
+  }
 
-  Faker() {
+  async Faker() {
+    const saltRounds = 10; // Set the salt rounds for hashing
+
     for (let index = 0; index < 30; index++) {
+      const plainPassword = faker.internet.password({ length: 10 });
+      const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+
       const fakeUser = {
         user_id: faker.string.uuid(),
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        password: faker.internet.password({ length: 10 }),
+        password: hashedPassword, // Store hashed password
         role: faker.helpers.arrayElement(['student', 'instructor', 'admin']),
         coursesTaught: [],
         coursesEnrolled: [],
@@ -59,7 +75,7 @@ export class UsersService {
         createdAt: new Date(),
       };
 
-      this.userModel.create(fakeUser);
+      await this.userModel.create(fakeUser);
     }
     return 'success';
   }

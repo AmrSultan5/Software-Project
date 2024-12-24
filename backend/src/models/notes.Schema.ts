@@ -2,25 +2,23 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type NotesDocument = Notes & Document;
-@Schema({ timestamps: true }) 
-export class Notes extends Document {
-  @Prop({ required: true, unique: true })
-  note_id: string; 
+
+@Schema({ timestamps: true })
+export class Notes {
+  @Prop({ required: true })
+  user_id: string;
 
   @Prop({ required: true })
-  user_id: string; 
-
-  @Prop({ required: false })
   course_id: string;
 
   @Prop({ required: true })
-  content: string; 
+  content: string;
 
   @Prop({ default: () => new Date(), immutable: true })
-  created_at: Date; 
+  created_at: Date;
 
-  @Prop({ default: () => new Date() })
-  last_updated: Date; 
+  @Prop({ default: null })
+  updated_at: Date;
 }
 
 export const NotesSchema = SchemaFactory.createForClass(Notes);

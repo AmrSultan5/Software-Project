@@ -37,7 +37,7 @@ export class AuthService {
       role,
     });
 
-    const token = this.jwtService.sign({ id: user._id });
+    const token = this.jwtService.sign({ user_id: user.user_id });
 
     return { token };
   }
@@ -58,7 +58,7 @@ export class AuthService {
     }
   
     // Generate a JWT token for the user
-    const token = this.jwtService.sign({ id: user._id, role: user.role });
+    const token = this.jwtService.sign({ user_id: user.user_id, role: user.role });
   
     // Check if MFA is enabled
     if (user.mfaSecret) {
@@ -112,7 +112,7 @@ export class AuthService {
     }
 
     // Generate a JWT token after successful OTP verification
-    const token = this.jwtService.sign({ id: user._id, role: user.role });
+    const token = this.jwtService.sign({ user_id: user.user_id, role: user.role });
 
     return { token, role: user.role };
   }

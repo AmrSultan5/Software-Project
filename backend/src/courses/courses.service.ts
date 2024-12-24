@@ -4,11 +4,15 @@ import { Model } from 'mongoose';
 import { CourseDto, ResourceDto, SectionDto } from 'src/dto/courses.dto';
 import { CourseDocument, Courses } from 'src/models/courses.Schema';
 import { DeleteResult } from 'mongodb';
+import { Enrollment, EnrollmentDocument } from 'src/models/enrollment-schema';
 
 @Injectable()
 export class CoursesService 
 {
-    constructor(@InjectModel(Courses.name) private courseModel: Model<CourseDocument>){}
+    constructor(
+        @InjectModel(Courses.name) private courseModel: Model<CourseDocument>,
+        @InjectModel(Enrollment.name) private enrollmentModel: Model<EnrollmentDocument>,
+){}
 
     CreateCourse(body: CourseDto)
     {
@@ -77,5 +81,41 @@ export class CoursesService
           { new: true },
         );
       }
-      
+
+      async enrollUserInCourse(user_id: string, course_id: string): Promise<any> {
+        const course = await this.courseModel.findOne({ course_id });
+        if (!course) {
+            throw new Error(`Course with ID ${course_id} not found.`);
+        }
+    
+        // Check if user is already enrolled
+        const existingEnrollment = await this.enrollmentModel.findOne({ user_id, course_id });
+        if (existingEnrollment) {
+            throw new Error('User is already enrolled in this course.');
+        }
+    
+        // Create enrollment
+        const enrollment = {
+            user_id, // Use the explicit user_id passed from the JWT
+            course_id,
+            enrolled_at: new Date(),
+            status: 'active',
+        };
+        return this.enrollmentModel.create(enrollment);
+    }
+
+    async getUserEnrollments(user_id: string) {
+        console.log("Service: Fetching enrollments for user_id:", user_id);
+    
+        const enrollments = await this.enrollmentModel.find({ user_id });
+        console.log("Service: Enrollments found:", enrollments);
+    
+        if (!enrollments || enrollments.length === 0) {
+            console.log("Service: No enrollments found for user_id:", user_id);
+            return [];
+        }
+    
+        return enrollments;
+    }                                         
+    
 }

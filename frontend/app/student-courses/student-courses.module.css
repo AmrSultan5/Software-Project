@@ -1,94 +1,128 @@
 .container {
-    padding: 20px;
-    background-color: #f7f9fc;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .title {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .coursesList {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    align-items: flex-start;
-  }
-  
-  .courseCard {
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 300px;
-    text-align: center;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .courseCard h2 {
-    font-size: 1.5rem;
-    color: #000;
-    margin-bottom: 10px;
-  }
-  
-  .courseCard p {
-    font-size: 1rem;
-    color: #333;
-    margin: 5px 0;
-  }
-  
-  .courseCard button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 15px;
-  }
-  
-  .courseCard button:hover {
-    background-color: #0056b3;
-  }
-  
-  .notesSection {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 500px;
-  }
-  
-  .notesSection textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    color: #333;
-    resize: none;
-  }
-  
-  .notesSection button {
-    margin-top: 10px;
-    background-color: #28a745;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .notesSection button:hover {
-    background-color: #218838;
-  }
-  
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  color: black; /* Set all text color to black */
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: black; /* Title in black */
+}
+
+.courseList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.courseCard {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  color: black; /* Ensure course card text is black */
+}
+
+.courseTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: black;
+}
+
+.resourceList {
+  list-style: none;
+  padding: 0;
+}
+
+.resourceItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.icon {
+  font-size: 20px;
+  color: black;
+}
+
+.resourceLink {
+  color: black;
+  text-decoration: none;
+}
+
+.resourceLink:hover {
+  text-decoration: underline;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: black;
+}
+
+.error {
+  text-align: center;
+  font-size: 16px;
+  color: red;
+}
+
+/* Search bar styling */
+.searchForm {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  font-size: 16px;
+  color: black;
+}
+
+.searchButton {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  font-size: 16px;
+  cursor: pointer;
+  color: black;
+}
+
+.searchButton:hover {
+  background-color: #e0e0e0;
+}
+
+.noteInput {
+  width: 100%;
+  min-height: 80px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.addNoteButton {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.addNoteButton:hover {
+  background-color: #444;
+}
