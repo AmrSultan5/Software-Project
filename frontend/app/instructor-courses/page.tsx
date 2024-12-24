@@ -38,27 +38,9 @@ type Course = {
   hierarchy?: Section[];
 };
 
-type ModuleData = {
-  module_id: string;
-  course_id: string;
-  title: string;
-  content?: string;
-  resources: string[];
-};
 
-type Quiz = {
-  quiz_id: string;
-  module_id: string;
-  questions: {
-    question_text: string;
-    options: string[];
-    correct_answer: string;
-  }[];
-  created_at?: Date;
-};
 
 export default function Courses() {
-  const [userId, setUserId] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,51 +50,7 @@ export default function Courses() {
   const router = useRouter();
 
   /** ----------- STATE: Add Course Modal ----------- **/
-  const [showAddCourseModal, setShowAddCourseModal] = useState(false);
-  const [newCourse, setNewCourse] = useState<Omit<Course, "hierarchy" | "resources">>({
-    course_id: "",
-    title: "",
-    description: "",
-    category: "",
-    difficulty_level: "Beginner",
-    created_by: userId || "",
-    taught_by: userId || "",
-  });
 
-  /** ----------- STATE: Delete Course ----------- **/
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
-
-  /** ----------- STATE: Manage Modules Modal ----------- **/
-  const [showModuleManager, setShowModuleManager] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [modulesForCourse, setModulesForCourse] = useState<ModuleData[]>([]);
-
-  /** ----------- STATE: Add Module Modal ----------- **/
-  const [showAddModuleModal, setShowAddModuleModal] = useState(false);
-  const [newModule, setNewModule] = useState<ModuleData>({
-    module_id: "",
-    course_id: "",
-    title: "",
-    content: "",
-    resources: [],
-  });
-
-  /** ----------- STATE: Manage Quizzes Modal ----------- **/
-  const [selectedModule, setSelectedModule] = useState<ModuleData | null>(null);
-  const [quizzesForModule, setQuizzesForModule] = useState<Quiz[]>([]);
-  const [showAddQuizModal, setShowAddQuizModal] = useState(false);
-  const [newQuiz, setNewQuiz] = useState<Quiz>({
-    quiz_id: "",
-    module_id: "",
-    questions: [
-      {
-        question_text: "",
-        options: [""],
-        correct_answer: "",
-      },
-    ],
-  });
 
   /********************************************
    * FETCH COURSES
@@ -136,7 +74,6 @@ export default function Courses() {
         return;
       }
 
-      setUserId(decodedToken.user_id);
 
       const fetchCourses = async () => {
         try {
@@ -202,47 +139,7 @@ export default function Courses() {
   /********************************************
    * DELETE COURSE
    ********************************************/
-  const confirmDelete = (course: Course) => {
-    setCourseToDelete(course);
-    setShowDeletePopup(true);
-  };
 
-  const handleCancelDelete = () => {
-    setCourseToDelete(null);
-    setShowDeletePopup(false);
-  };
-
-  const handleDeleteCourse = async () => {
-    if (!courseToDelete) return;
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/courses/${courseToDelete.course_id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete the course.");
-      }
-
-      const updated = courses.filter(
-        (c) => c.course_id !== courseToDelete.course_id
-      );
-      setCourses(updated);
-      setFilteredCourses(updated);
-      setShowDeletePopup(false);
-      alert("Course deleted successfully!");
-    } catch (err) {
-      console.error("Error deleting course:", err);
-      alert(err || "Failed to delete the course. Please try again.");
-    }
-  };
 
   if (loading) return <div>Loading courses...</div>;
   if (error) return <div className={styles.error}>{error}</div>;

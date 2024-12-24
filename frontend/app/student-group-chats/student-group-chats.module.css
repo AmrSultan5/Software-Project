@@ -3,102 +3,75 @@
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
-  color: #333;
 }
 
 .title {
-  font-size: 2em;
+  font-size: 2rem;
   text-align: center;
   margin-bottom: 20px;
-  color: #2c3e50;
 }
 
-.metricsList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-}
-
-.metricCard {
-  background: #f9f9f9;
+.chatContainer {
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 15px;
-  width: 300px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
+  padding: 10px;
+  background: #f9f9f9;
+  margin-bottom: 20px;
 }
 
-.metricCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.messages {
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
 }
 
-.metricCard h2 {
-  font-size: 1.5em;
-  margin: 0 0 10px;
-  color: #34495e;
-}
-
-.metricCard p {
-  font-size: 0.9em;
+.message {
+  padding: 10px;
+  border-radius: 5px;
   margin: 5px 0;
 }
 
-.progressBar {
-  background: #e0e0e0;
+.instructorMessage {
+  background-color: #3498db;
+  color: white;
+}
+
+.studentMessage {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.inputContainer {
+  display: flex;
+}
+
+.input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  overflow: hidden;
-  height: 10px;
-  margin: 10px 0;
+  margin-right: 10px;
 }
 
-.progressBar div {
-  background: #2ecc71;
-  height: 100%;
-  transition: width 0.3s ease-in-out;
+.sendButton {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
-
-@media (max-width: 768px) {
-  .metricCard {
-    width: 100%;
-  }
-}
-
 
 .notifications {
-  background: #f4f4f4;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-.notifications h2 {
-  font-size: 1.5em;
-  color: #2c3e50;
+  padding: 10px;
+  background: #f4f4f4;
 }
 
 .notification {
-  background: #ffffff;
   padding: 10px;
-  margin: 5px 0;
   border: 1px solid #ddd;
   border-radius: 5px;
-}
-
-.chatButton {
-  background: #3498db;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.3s ease-in-out;
-}
-
-.chatButton:hover {
-  background: #2980b9;
+  margin-bottom: 10px;
 }
