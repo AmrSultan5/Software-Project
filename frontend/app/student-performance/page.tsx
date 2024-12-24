@@ -5,9 +5,12 @@ import styles from "./student-performance.module.css";
 
 type Metric = {
   id: string;
-  title: string;
+  courseTitle: string;
   description: string;
-  value: number; // Percentage or score
+  completionPercentage: number;
+  averageScore: number;
+  timeSpent: number;
+  resources: { type: string; url: string }[];
 };
 
 export default function PerformanceTracking() {
@@ -18,16 +21,27 @@ export default function PerformanceTracking() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/performance-metrics", {
+        const response = await fetch("http://localhost:5000/api/progress/students/<studentId>", {
           method: "GET",
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch performance metrics.");
+          throw new Error("Failed to fetch metrics.");
         }
 
-        const data: Metric[] = await response.json();
-        setMetrics(data);
+        const data = await response.json();
+
+        const mappedMetrics = data.map((item: any) => ({
+          id: item._id,
+          courseTitle: item.course?.title || "Unknown Course",
+          description: item.course?.description || "No description available",
+          completionPercentage: item.completionPercentage,
+          averageScore: item.averageScore,
+          timeSpent: item.timeSpent,
+          resources: item.course?.resources || [],
+        }));
+
+        setMetrics(mappedMetrics);
       } catch (err) {
         console.error("Error fetching metrics:", err);
         setError("Something went wrong. Please try again later.");
@@ -48,15 +62,14 @@ export default function PerformanceTracking() {
       <div className={styles.metricsList}>
         {metrics.map((metric) => (
           <div key={metric.id} className={styles.metricCard}>
-            <h2>{metric.title}</h2>
+            <h2>{metric.courseTitle}</h2>
             <p>{metric.description}</p>
             <div className={styles.progressBar}>
-              <div style={{ width: `${metric.value}%` }}></div>
+              <div style={{ width: `${metric.completionPercentage}%` }}></div>
             </div>
-            <p>{metric.value}%</p>
-            <button onClick={() => alert(`Details for ${metric.title}`)}>
-              View Details
-            </button>
+            <p>Completion: {metric.completionPercentage}%</p>
+            <p>Average Score: {metric.averageScore}%</p>
+            <p>Time Spent: {metric.timeSpent} mins</p>
           </div>
         ))}
       </div>
